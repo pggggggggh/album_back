@@ -5,10 +5,13 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Getter
 @Setter
+@Entity
 public class Album {
     @Id
     @Column(name = "album_id")
@@ -18,7 +21,7 @@ public class Album {
     @Column(nullable = false)
     private String title;
 
-    @OneToMany(mappedBy = "artist")
     @Column(nullable = false)
-    private List<Artist> artists = new ArrayList<>();
+    @OneToMany(mappedBy = "album")
+    private Set<AlbumArtist> artists = new HashSet<>();
 }

@@ -1,0 +1,54 @@
+package com.pgh.album_back.Entity;
+
+import com.pgh.album_back.Repository.ArtistRelationshipRepository;
+import com.pgh.album_back.Repository.ArtistRepository;
+import com.pgh.album_back.Service.ArtistService;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.Id;
+import jakarta.persistence.PersistenceContext;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.Commit;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.transaction.annotation.Transactional;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+@SpringBootTest
+@ActiveProfiles("local")
+public class ArtistRelationshipTest {
+    @Autowired
+    ArtistRepository artistRepository;
+    @Autowired
+    ArtistService artistService;
+    @PersistenceContext
+    EntityManager em;
+
+    @Test
+    @Transactional
+    @Commit
+    public void multipleGroupTest() {
+        Artist karina = Artist.createArtist("Karina");
+        Artist aespa = Artist.createArtist("aespa");
+        Artist gotTheBeat = Artist.createArtist("GOT the beat");
+
+        artistService.saveArtist(karina);
+        artistService.saveArtist(aespa);
+        artistService.saveArtist(gotTheBeat);
+
+        artistService.addArtistToGroup(karina.getId(), aespa.getId());
+        artistService.addArtistToGroup(karina.getId(), gotTheBeat.getId());
+
+        em.flush();
+        em.clear();
+
+        Artist newKarina = artistRepository.findById(karina.getId()).orElseThrow();
+        Artist newAespa = artistRepository.findById(aespa.getId()).orElseThrow();
+        Artist newGotTheBeat = artistRepository.findById(gotTheBeat.getId()).orElseThrow();
+
+        assertEquals(2, newKarina.getGroups().size());
+        assertTrue(newAespa.getMembers().stream().anyMatch(ag -> ag.getMember().getId().equals(newKarina.getId())));
+        assertTrue(newGotTheBeat.getMembers().stream().anyMatch(ag -> ag.getMember().getId().equals(newKarina.getId())));
+    }
+}
