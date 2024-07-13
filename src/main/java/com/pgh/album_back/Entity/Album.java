@@ -4,15 +4,13 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 @Getter
 @Setter
 @Entity
-public class Album {
+public class Album extends BaseEntity {
     @Id
     @Column(name = "album_id")
     @GeneratedValue(strategy = GenerationType.AUTO)

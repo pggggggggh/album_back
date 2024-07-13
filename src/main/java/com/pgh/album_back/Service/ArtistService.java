@@ -6,9 +6,8 @@ import com.pgh.album_back.Repository.ArtistRelationshipRepository;
 import com.pgh.album_back.Repository.ArtistRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
@@ -26,9 +25,13 @@ public class ArtistService {
         Artist member = artistRepository.findById(memberId).orElseThrow(EntityNotFoundException::new);
         Artist group = artistRepository.findById(groupId).orElseThrow(EntityNotFoundException::new);
 
-        ArtistRelationship artistRelationship = member.addToGroup(group);
-        artistRepository.save(member);
-        artistRepository.save(group);
+        if (artistRelationshipRepository.existsByMemberAndGroup(member,group)) {
+            throw new DataIntegrityViolationException("Relation already exists between member and group");
+        }
+        ArtistRelationship artistRelationship = new ArtistRelationship(member, group);
+        member.getGroups().add(artistRelationship);
+        group.getMembers().add(artistRelationship);
+
         artistRelationshipRepository.save(artistRelationship);
     }
 
@@ -37,7 +40,10 @@ public class ArtistService {
         Artist member = artistRepository.findById(memberId).orElseThrow(EntityNotFoundException::new);
         Artist group = artistRepository.findById(groupId).orElseThrow(EntityNotFoundException::new);
 
-        ArtistRelationship artistRelationship = member.removeFromGroup(group);
+        ArtistRelationship artistRelationship = artistRelationshipRepository.findByMemberAndGroup(member, group)
+                .orElseThrow(() -> new EntityNotFoundException("Relation does not exist between member and group"));
+        member.getGroups().remove(artistRelationship);
+        group.getMembers().remove(artistRelationship);
         artistRelationshipRepository.delete(artistRelationship);
     }
 }

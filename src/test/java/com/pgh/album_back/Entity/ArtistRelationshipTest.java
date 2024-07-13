@@ -1,20 +1,19 @@
 package com.pgh.album_back.Entity;
 
-import com.pgh.album_back.Repository.ArtistRelationshipRepository;
 import com.pgh.album_back.Repository.ArtistRepository;
 import com.pgh.album_back.Service.ArtistService;
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.Id;
 import jakarta.persistence.PersistenceContext;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.Commit;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@Slf4j
 @SpringBootTest
 @ActiveProfiles("local")
 public class ArtistRelationshipTest {
@@ -27,7 +26,6 @@ public class ArtistRelationshipTest {
 
     @Test
     @Transactional
-    @Commit
     public void multipleGroupTest() {
         Artist karina = Artist.createArtist("Karina");
         Artist aespa = Artist.createArtist("aespa");

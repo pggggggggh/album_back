@@ -5,13 +5,11 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.Objects;
-
 @Entity
 @Getter
 @Setter
 @NoArgsConstructor
-public class ArtistRelationship {
+public class ArtistRelationship extends BaseEntity {
     @Id
     @Column(name = "artist_relationship_id")
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -20,28 +18,15 @@ public class ArtistRelationship {
     private String role;
 
     @ManyToOne
-    @JoinColumn(name = "group_id")
-    private Artist group;
-
-    @ManyToOne
     @JoinColumn(name = "member_id")
     private Artist member;
 
-    public ArtistRelationship(Artist group, Artist member) {
-        this.group = group;
+    @ManyToOne
+    @JoinColumn(name = "group_id")
+    private Artist group;
+
+    public ArtistRelationship(Artist member, Artist group) {
         this.member = member;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        ArtistRelationship that = (ArtistRelationship) o;
-        return Objects.equals(group, that.group) && Objects.equals(member, that.member);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(group, member);
+        this.group = group;
     }
 }

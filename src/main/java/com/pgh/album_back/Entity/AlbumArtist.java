@@ -7,7 +7,7 @@ import lombok.Setter;
 @Entity
 @Getter
 @Setter
-public class AlbumArtist {
+public class AlbumArtist extends BaseEntity {
     @Id
     @Column(name = "album_artist_id")
     @GeneratedValue(strategy = GenerationType.AUTO)
