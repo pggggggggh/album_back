@@ -1,4 +1,4 @@
-package com.pgh.album_back.Entity;
+package com.pgh.album_back.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -7,15 +7,15 @@ import lombok.Setter;
 @Entity
 @Getter
 @Setter
-public class AlbumArtist extends BaseEntity {
+public class EntryArtist extends BaseEntity {
     @Id
-    @Column(name = "album_artist_id")
+    @Column(name = "entry_artist_id")
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name="album_id")
-    private Album album;
+    @JoinColumn(name = "entry_id")
+    private Entry entry;
 
     @ManyToOne
     @JoinColumn(name="artist_id")

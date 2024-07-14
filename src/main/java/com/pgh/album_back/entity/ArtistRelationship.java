@@ -1,9 +1,11 @@
-package com.pgh.album_back.Entity;
+package com.pgh.album_back.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.time.LocalDate;
 
 @Entity
 @Getter
@@ -15,7 +17,11 @@ public class ArtistRelationship extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    private String role;
+    private LocalDate beginDate;
+    private LocalDate endDate;
+    private boolean ended;
+
+    private String type;
 
     @ManyToOne
     @JoinColumn(name = "member_id")

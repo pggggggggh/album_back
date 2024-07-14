@@ -1,7 +1,7 @@
-package com.pgh.album_back.Entity;
+package com.pgh.album_back.entity;
 
-import com.pgh.album_back.Repository.ArtistRepository;
-import com.pgh.album_back.Service.ArtistService;
+import com.pgh.album_back.repository.ArtistRepository;
+import com.pgh.album_back.service.ArtistService;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import lombok.extern.slf4j.Slf4j;

@@ -1,9 +1,9 @@
-package com.pgh.album_back.Service;
+package com.pgh.album_back.service;
 
-import com.pgh.album_back.Entity.Artist;
-import com.pgh.album_back.Entity.ArtistRelationship;
-import com.pgh.album_back.Repository.ArtistRelationshipRepository;
-import com.pgh.album_back.Repository.ArtistRepository;
+import com.pgh.album_back.entity.Artist;
+import com.pgh.album_back.entity.ArtistRelationship;
+import com.pgh.album_back.repository.ArtistRelationshipRepository;
+import com.pgh.album_back.repository.ArtistRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -21,7 +21,7 @@ public class ArtistService {
         artistRepository.save(artist);
     }
     @Transactional
-    public void addArtistToGroup(Long memberId, Long groupId) {
+    public void addArtistToGroup(String memberId, String groupId) {
         Artist member = artistRepository.findById(memberId).orElseThrow(EntityNotFoundException::new);
         Artist group = artistRepository.findById(groupId).orElseThrow(EntityNotFoundException::new);
 
@@ -36,7 +36,7 @@ public class ArtistService {
     }
 
     @Transactional
-    public void removeArtistFromGroup(Long memberId, Long groupId) {
+    public void removeArtistFromGroup(String memberId, String groupId) {
         Artist member = artistRepository.findById(memberId).orElseThrow(EntityNotFoundException::new);
         Artist group = artistRepository.findById(groupId).orElseThrow(EntityNotFoundException::new);
 

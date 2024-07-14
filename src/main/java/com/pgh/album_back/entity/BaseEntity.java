@@ -1,4 +1,4 @@
-package com.pgh.album_back.Entity;
+package com.pgh.album_back.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;
