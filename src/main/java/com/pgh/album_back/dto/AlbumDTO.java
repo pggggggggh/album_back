@@ -4,7 +4,9 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Getter
 @Setter
@@ -12,6 +14,36 @@ public class AlbumDTO {
     private String id;
     private String title;
     private String disambiguation;
+    private List<String> types = new ArrayList<>();
+    private List<Artist> artists = new ArrayList<>();
     private LocalDate date;
-    private List<String> trackRecordingIDs;
+    private List<AlbumTrack> albumTracks = new ArrayList<>();
+
+    @Getter
+    @Setter
+    public static class AlbumTrack {
+        private String number;
+        private int position;
+        private TrackDTO track;
+    }
+
+    @Getter
+    @Setter
+    public static class Artist {
+        private String id;
+        private String name;
+    }
+
+    public void addTrack(AlbumTrack track) {
+        this.albumTracks.add(track);
+    }
+    public void addType(String type) {
+        this.types.add(type);
+    }
+    public void addArtist(Artist artist) {
+        this.artists.add(artist);
+    }
+    public List<TrackDTO> getTracks() {
+        return albumTracks.stream().map(AlbumTrack::getTrack).collect(Collectors.toList());
+    }
 }

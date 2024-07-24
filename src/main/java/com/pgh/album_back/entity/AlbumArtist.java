@@ -9,25 +9,22 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class AlbumTrack extends BaseEntity {
+public class AlbumArtist extends BaseEntity {
     @Id
+    @Column(name = "album_artist_id")
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    private String number;
-
-    private Integer position;
-
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "album_id")
     private Album album;
 
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "track_id")
-    private Track track;
+    @ManyToOne
+    @JoinColumn(name="artist_id")
+    private Artist artist;
 
-    public AlbumTrack(Album album, Track track) {
+    public AlbumArtist(Album album, Artist artist) {
         this.album = album;
-        this.track = track;
+        this.artist = artist;
     }
 }
