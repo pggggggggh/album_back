@@ -1,6 +1,6 @@
 package com.pgh.album_back.service;
 
-import com.pgh.album_back.dto.AlbumDTO;
+import com.pgh.album_back.dto.AlbumCreateDTO;
 import com.pgh.album_back.entity.Album;
 import com.pgh.album_back.entity.AlbumArtist;
 import com.pgh.album_back.entity.Artist;
@@ -9,6 +9,7 @@ import com.pgh.album_back.repository.AlbumRepository;
 import com.pgh.album_back.repository.ArtistRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,17 +28,17 @@ public class AlbumService {
 
     @Transactional
     public String createAlbum(String id) {
-        AlbumDTO albumDTO = apiService.fetchAlbum(id).blockOptional().orElseThrow(NoSuchElementException::new);
+        AlbumCreateDTO albumCreateDTO = apiService.fetchAlbum(id).blockOptional().orElseThrow(NoSuchElementException::new);
         Album album = new Album(id);
 
-        album.setTitle(albumDTO.getTitle());
-        album.setDisambiguation(albumDTO.getDisambiguation());
-        album.setDate(albumDTO.getDate());
-        album.setTypes(albumDTO.getTypes());
+        album.setTitle(albumCreateDTO.getTitle());
+        album.setDisambiguation(albumCreateDTO.getDisambiguation());
+        album.setDate(albumCreateDTO.getDate());
+        album.setTypes(albumCreateDTO.getTypes());
 
         album = albumRepository.save(album);
 
-        for (var dtoArtist : albumDTO.getArtists()) {
+        for (var dtoArtist : albumCreateDTO.getArtists()) {
             Artist artist = artistRepository.findById(dtoArtist.getId())
                     .orElseGet(() -> {
                         Artist newArtist = new Artist(dtoArtist.getId());
@@ -51,7 +52,7 @@ public class AlbumService {
             albumArtistRepository.save(albumArtist);
         }
 
-        trackService.addTracksToAlbum(album, albumDTO.getAlbumTracks());
+        trackService.addTracksToAlbum(album, albumCreateDTO.getAlbumTracks());
         return album.getId();
     }
 
@@ -60,8 +61,12 @@ public class AlbumService {
         Artist artist = artistRepository.findById(artistId).orElseThrow(EntityNotFoundException::new);
 
         for (var albumId : albumIds) {
-            AlbumDTO albumDTO = apiService.fetchAlbum(albumId).block();
+            AlbumCreateDTO albumCreateDTO = apiService.fetchAlbum(albumId).block();
             if (!albumRepository.existsById(albumId)) createAlbum(albumId);
         }
+    }
+
+    public List<Album> getAlbums(Pageable pageable) {
+        return albumRepository.findAllByOrderByDateDesc(pageable);
     }
 }

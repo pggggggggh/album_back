@@ -1,5 +1,6 @@
 package com.pgh.album_back.entity;
 
+import com.pgh.album_back.dto.AlbumSummaryDTO;
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
@@ -38,5 +39,19 @@ public class Album extends Entry {
 
     public void addArtist(AlbumArtist albumArtist) {
         artists.add(albumArtist);
+    }
+
+    public AlbumSummaryDTO toAlbumSummaryDTO() {
+        AlbumSummaryDTO albumSummaryDTO = new AlbumSummaryDTO();
+        albumSummaryDTO.setId(id);
+        albumSummaryDTO.setTitle(title);
+        albumSummaryDTO.setDisambiguation(disambiguation);
+        albumSummaryDTO.setDate(date);
+        albumSummaryDTO.setAvgRating(avgRating);
+        artists.forEach(albumArtist -> {
+            albumSummaryDTO.addArtist(albumArtist.getArtist().getId(), albumArtist.getArtist().getName());
+        });
+
+        return albumSummaryDTO;
     }
 }

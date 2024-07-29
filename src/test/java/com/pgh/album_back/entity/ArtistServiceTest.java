@@ -21,7 +21,7 @@ public class ArtistServiceTest {
     @Test
     @Transactional
     public void createArtistTest() {
-        Artist artist = artistRepository.findById(artistService.fetchAndCreateArtist("b51c672b-85e0-48fe-8648-470a2422229f")).orElseThrow();
+        Artist artist = artistRepository.findById(artistService.fetchAndCreateArtist("6b128dd7-e998-4edb-a4f5-400fef190445")).orElseThrow();
 
         return;
     }

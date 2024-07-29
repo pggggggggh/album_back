@@ -1,7 +1,7 @@
 package com.pgh.album_back.service;
 
-import com.pgh.album_back.dto.AlbumDTO;
-import com.pgh.album_back.dto.TrackDTO;
+import com.pgh.album_back.dto.AlbumCreateDTO;
+import com.pgh.album_back.dto.TrackCreateDTO;
 import com.pgh.album_back.entity.*;
 import com.pgh.album_back.repository.*;
 import lombok.RequiredArgsConstructor;
@@ -21,19 +21,19 @@ public class TrackService {
     private final ArtistRepository artistRepository;
 
     @Transactional
-    public void addTracksToAlbum(Album album, List<AlbumDTO.AlbumTrack> albumTracks) {
+    public void addTracksToAlbum(Album album, List<AlbumCreateDTO.AlbumTrack> albumTracks) {
         for (var dtoAlbumTrack : albumTracks) {
-            TrackDTO trackDTO = dtoAlbumTrack.getTrack();
-            Track track = trackRepository.findById(trackDTO.getId())
+            TrackCreateDTO trackCreateDTO = dtoAlbumTrack.getTrack();
+            Track track = trackRepository.findById(trackCreateDTO.getId())
                     .orElseGet(() -> {
-                        Track newTrack = new Track(trackDTO.getId());
-                        newTrack.setTitle(trackDTO.getTitle());
-                        newTrack.setDisambiguation(trackDTO.getDisambiguation());
-                        newTrack.setDate(trackDTO.getFirstReleaseDate());
+                        Track newTrack = new Track(trackCreateDTO.getId());
+                        newTrack.setTitle(trackCreateDTO.getTitle());
+                        newTrack.setDisambiguation(trackCreateDTO.getDisambiguation());
+                        newTrack.setDate(trackCreateDTO.getFirstReleaseDate());
                         return trackRepository.save(newTrack);
                     });
 
-            for (var dtoArtist : trackDTO.getArtists()) {
+            for (var dtoArtist : trackCreateDTO.getArtists()) {
                 Artist artist = artistRepository.findById(dtoArtist.getId())
                         .orElseGet(() -> {
                             Artist newArtist = new Artist(dtoArtist.getId());
@@ -47,7 +47,7 @@ public class TrackService {
                 trackArtistRepository.save(trackArtist);
             }
 
-            for (var entry : trackDTO.getCredits().entrySet()) {
+            for (var entry : trackCreateDTO.getCredits().entrySet()) {
                 String artistId = entry.getKey();
                 var dtoCredit = entry.getValue();
                 Artist artist = artistRepository.findById(artistId)

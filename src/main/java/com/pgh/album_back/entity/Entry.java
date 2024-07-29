@@ -31,6 +31,8 @@ public class Entry extends BaseEntity {
     @OneToMany(mappedBy = "entry")
     protected Set<Credit> credits = new HashSet<>();
 
+    protected Double avgRating;
+
     @OneToMany(mappedBy = "entry")
     protected List<Review> reviews = new ArrayList<>();
 

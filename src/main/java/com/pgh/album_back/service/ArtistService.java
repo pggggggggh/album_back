@@ -1,6 +1,6 @@
 package com.pgh.album_back.service;
 
-import com.pgh.album_back.dto.ArtistDTO;
+import com.pgh.album_back.dto.ArtistCreateDTO;
 import com.pgh.album_back.entity.Artist;
 import com.pgh.album_back.entity.ArtistRelationship;
 import com.pgh.album_back.repository.ArtistRelationshipRepository;
@@ -37,21 +37,25 @@ public class ArtistService {
 
     @Transactional
     public String fetchAndCreateArtist(String id) {
-        ArtistDTO artistDTO = apiService.fetchArtist(id).blockOptional().orElseThrow(NoSuchElementException::new);
+        if (artistRepository.existsById(id)) {
+            return id;
+        }
+
+        ArtistCreateDTO artistCreateDTO = apiService.fetchArtist(id).blockOptional().orElseThrow(NoSuchElementException::new);
         Artist artist = new Artist(id);
 
-        artist.setName(artistDTO.getName());
-        artist.setDisambiguation(artistDTO.getDisambiguation());
-        artist.setType(artistDTO.getType());
-        artist.setGender(artistDTO.getGender());
-        artist.setCountry(artistDTO.getCountry());
-        artist.setArea(artistDTO.getArea());
-        artist.setBeginArea(artistDTO.getBeginArea());
-        artist.setEndArea(artistDTO.getEndArea());
-        artist.setBeginDate(artistDTO.getBeginDate());
-        artist.setEndDate(artistDTO.getEndDate());
+        artist.setName(artistCreateDTO.getName());
+        artist.setDisambiguation(artistCreateDTO.getDisambiguation());
+        artist.setType(artistCreateDTO.getType());
+        artist.setGender(artistCreateDTO.getGender());
+        artist.setCountry(artistCreateDTO.getCountry());
+        artist.setArea(artistCreateDTO.getArea());
+        artist.setBeginArea(artistCreateDTO.getBeginArea());
+        artist.setEndArea(artistCreateDTO.getEndArea());
+        artist.setBeginDate(artistCreateDTO.getBeginDate());
+        artist.setEndDate(artistCreateDTO.getEndDate());
         artistRepository.save(artist);
-        albumService.addAlbumsOfArtist(id, artistDTO.getAlbumIds());
+        albumService.addAlbumsOfArtist(id, artistCreateDTO.getAlbumIds());
 
         return artist.getId();
     }

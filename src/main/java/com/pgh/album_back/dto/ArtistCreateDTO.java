@@ -9,7 +9,7 @@ import java.util.List;
 
 @Getter
 @Setter
-public class ArtistDTO {
+public class ArtistCreateDTO {
     private String id;
     private String name;
     private String disambiguation;

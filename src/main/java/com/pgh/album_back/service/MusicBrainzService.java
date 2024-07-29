@@ -20,7 +20,7 @@ public class MusicBrainzService implements APIService {
     }
 
     @Override
-    public Mono<ArtistDTO> fetchArtist(String id) {
+    public Mono<ArtistCreateDTO> fetchArtist(String id) {
         return webClient.get()
                 .uri(uriBuilder -> uriBuilder
                         .path("/artist/{id}")
@@ -31,34 +31,34 @@ public class MusicBrainzService implements APIService {
                 .bodyToMono(MusicBrainzArtistDTO.class)
                 .retryWhen(Retry.fixedDelay(MAX_ATTEMPTS, Duration.ofMillis(REQUEST_DELAY)))
                 .map(musicBrainzArtistDTO -> {
-                    ArtistDTO artistDTO = new ArtistDTO();
+                    ArtistCreateDTO artistCreateDTO = new ArtistCreateDTO();
 
-                    artistDTO.setId(musicBrainzArtistDTO.getId());
-                    artistDTO.setName(musicBrainzArtistDTO.getName());
-                    artistDTO.setDisambiguation(musicBrainzArtistDTO.getDisambiguation());
-                    artistDTO.setType(musicBrainzArtistDTO.getType());
-                    artistDTO.setGender(musicBrainzArtistDTO.getGender());
-                    artistDTO.setArea(musicBrainzArtistDTO.getArea().getName());
-                    artistDTO.setBeginArea(musicBrainzArtistDTO.getBeginArea().getName());
+                    artistCreateDTO.setId(musicBrainzArtistDTO.getId());
+                    artistCreateDTO.setName(musicBrainzArtistDTO.getName());
+                    artistCreateDTO.setDisambiguation(musicBrainzArtistDTO.getDisambiguation());
+                    artistCreateDTO.setType(musicBrainzArtistDTO.getType());
+                    artistCreateDTO.setGender(musicBrainzArtistDTO.getGender());
+                    artistCreateDTO.setArea(musicBrainzArtistDTO.getArea().getName());
+                    artistCreateDTO.setBeginArea(musicBrainzArtistDTO.getBeginArea().getName());
 
                     for (var releaseGroup : musicBrainzArtistDTO.getReleaseGroups()) {
-                        artistDTO.addAlbumId(releaseGroup.getId());
+                        artistCreateDTO.addAlbumId(releaseGroup.getId());
                     }
 
                     for (var dtoRelation : musicBrainzArtistDTO.getRelations()) {
-                        ArtistDTO.Relation relation = new ArtistDTO.Relation();
+                        ArtistCreateDTO.Relation relation = new ArtistCreateDTO.Relation();
                         relation.setArtistId(dtoRelation.getArtist().getId());
                         relation.setType(dtoRelation.getType());
 
-                        artistDTO.addRelation(relation);
+                        artistCreateDTO.addRelation(relation);
                     }
 
-                    return artistDTO;
+                    return artistCreateDTO;
                 });
     }
 
     @Override
-    public Mono<AlbumDTO> fetchAlbum(String id) {
+    public Mono<AlbumCreateDTO> fetchAlbum(String id) {
         return webClient.get()
                 .uri(uriBuilder -> uriBuilder
                         .path("/release-group/{id}")
@@ -82,26 +82,26 @@ public class MusicBrainzService implements APIService {
                             .retryWhen(Retry.fixedDelay(MAX_ATTEMPTS, Duration.ofMillis(REQUEST_DELAY)))
                             .map(
                                     musicBrainzReleaseDTO -> {
-                                        AlbumDTO albumDTO = new AlbumDTO();
-                                        albumDTO.setId(musicBrainzReleaseDTO.getId());
-                                        albumDTO.setTitle(musicBrainzReleaseDTO.getTitle());
-                                        albumDTO.addType(musicBrainzReleaseGroupDTO.getPrimaryType());
+                                        AlbumCreateDTO albumCreateDTO = new AlbumCreateDTO();
+                                        albumCreateDTO.setId(musicBrainzReleaseDTO.getId());
+                                        albumCreateDTO.setTitle(musicBrainzReleaseDTO.getTitle());
+                                        albumCreateDTO.addType(musicBrainzReleaseGroupDTO.getPrimaryType());
                                         for (var type : musicBrainzReleaseGroupDTO.getSecondaryTypes()) {
-                                            albumDTO.addType(type);
+                                            albumCreateDTO.addType(type);
                                         }
-                                        albumDTO.setDisambiguation(musicBrainzReleaseDTO.getDisambiguation());
-                                        albumDTO.setDate(musicBrainzReleaseDTO.getDate());
+                                        albumCreateDTO.setDisambiguation(musicBrainzReleaseDTO.getDisambiguation());
+                                        albumCreateDTO.setDate(musicBrainzReleaseDTO.getDate());
 
                                         for (var artistCredit : musicBrainzReleaseDTO.getArtistCredits()) {
-                                            AlbumDTO.Artist artist = new AlbumDTO.Artist();
+                                            AlbumCreateDTO.Artist artist = new AlbumCreateDTO.Artist();
                                             artist.setId(artistCredit.getArtist().getId());
                                             artist.setName(artistCredit.getArtist().getName());
-                                            albumDTO.addArtist(artist);
+                                            albumCreateDTO.addArtist(artist);
                                         }
 
                                         for (var media : musicBrainzReleaseDTO.getMedias()) {
                                             for (var dtoTrack : media.getTracks()) {
-                                                TrackDTO track = new TrackDTO();
+                                                TrackCreateDTO track = new TrackCreateDTO();
                                                 var recording = dtoTrack.getRecording();
 
                                                 track.setId(recording.getId());
@@ -111,7 +111,7 @@ public class MusicBrainzService implements APIService {
                                                 track.setFirstReleaseDate(recording.getFirstReleaseDate());
 
                                                 for (var artistCredit : dtoTrack.getArtistCredits()) {
-                                                    TrackDTO.Artist artist = new TrackDTO.Artist();
+                                                    TrackCreateDTO.Artist artist = new TrackCreateDTO.Artist();
                                                     artist.setId(artistCredit.getArtist().getId());
                                                     artist.setName(artistCredit.getArtist().getName());
                                                     track.addArtist(artist);
@@ -128,7 +128,7 @@ public class MusicBrainzService implements APIService {
                                                 for (var relation : relationsToAdd) {
                                                     if (!relation.getTargetType().equals("artist")) continue;
 
-                                                    TrackDTO.Credit credit = new TrackDTO.Credit();
+                                                    TrackCreateDTO.Credit credit = new TrackCreateDTO.Credit();
                                                     credit.setArtistName(relation.getArtist().getName());
                                                     if (!relation.getAttributes().isEmpty()) {
                                                         relation.getAttributes().forEach(
@@ -141,15 +141,15 @@ public class MusicBrainzService implements APIService {
                                                     track.addCredit(relation.getArtist().getId(), credit);
                                                 }
 
-                                                AlbumDTO.AlbumTrack albumTrack = new AlbumDTO.AlbumTrack();
+                                                AlbumCreateDTO.AlbumTrack albumTrack = new AlbumCreateDTO.AlbumTrack();
                                                 albumTrack.setNumber(dtoTrack.getNumber());
                                                 albumTrack.setPosition(dtoTrack.getPosition());
                                                 albumTrack.setTrack(track);
-                                                albumDTO.addTrack(albumTrack);
+                                                albumCreateDTO.addTrack(albumTrack);
                                             }
                                         }
 
-                                        return albumDTO;
+                                        return albumCreateDTO;
                                     }
                             );
                 });

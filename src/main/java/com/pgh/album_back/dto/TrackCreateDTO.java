@@ -11,7 +11,7 @@ import java.util.Map;
 
 @Getter
 @Setter
-public class TrackDTO {
+public class TrackCreateDTO {
     private String id;
     private String title;
     private String disambiguation;

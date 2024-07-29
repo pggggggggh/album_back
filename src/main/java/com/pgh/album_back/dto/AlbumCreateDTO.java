@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 
 @Getter
 @Setter
-public class AlbumDTO {
+public class AlbumCreateDTO {
     private String id;
     private String title;
     private String disambiguation;
@@ -24,7 +24,7 @@ public class AlbumDTO {
     public static class AlbumTrack {
         private String number;
         private int position;
-        private TrackDTO track;
+        private TrackCreateDTO track;
     }
 
     @Getter
@@ -43,7 +43,7 @@ public class AlbumDTO {
     public void addArtist(Artist artist) {
         this.artists.add(artist);
     }
-    public List<TrackDTO> getTracks() {
+    public List<TrackCreateDTO> getTracks() {
         return albumTracks.stream().map(AlbumTrack::getTrack).collect(Collectors.toList());
     }
 }
