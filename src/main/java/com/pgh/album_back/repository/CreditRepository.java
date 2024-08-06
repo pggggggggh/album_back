@@ -5,8 +5,6 @@ import com.pgh.album_back.entity.Credit;
 import com.pgh.album_back.entity.Entry;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import java.util.Optional;
-
 public interface CreditRepository extends JpaRepository<Credit, Long> {
-    Optional<Credit> findByArtistAndEntry(Artist artist, Entry entry);
+    boolean existsByArtistAndEntry(Artist artist, Entry entry);
 }

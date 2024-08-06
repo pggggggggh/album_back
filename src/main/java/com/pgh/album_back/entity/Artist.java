@@ -60,12 +60,20 @@ public class Artist extends BaseEntity {
         credits.add(credit);
     }
 
+    public void removeCredit(Credit credit) {
+        credits.remove(credit);
+    }
+
     public void addAlbum(AlbumArtist albumArtist) {
         albums.add(albumArtist);
     }
 
     public void addTrack(TrackArtist trackArtist) {
         tracks.add(trackArtist);
+    }
+
+    public void removeTrack(TrackArtist trackArtist) {
+        tracks.remove(trackArtist);
     }
 
     public void removeGroup(ArtistRelationship artistRelationship) {

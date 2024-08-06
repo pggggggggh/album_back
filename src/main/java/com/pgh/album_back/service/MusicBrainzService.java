@@ -1,35 +1,49 @@
 package com.pgh.album_back.service;
 
 import com.pgh.album_back.dto.*;
+import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import reactor.netty.http.client.HttpClient;
 import reactor.util.retry.Retry;
 
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class MusicBrainzService implements APIService {
     public static final long REQUEST_DELAY = 5000;
-    public static final long MAX_ATTEMPTS = 3;
+    public static final long MAX_ATTEMPTS = 5;
     private final WebClient webClient;
+    private final WebClient coverWebClient;
+
     public MusicBrainzService(WebClient.Builder webClientBuilder) {
         this.webClient = webClientBuilder.baseUrl("https://musicbrainz.org/ws/2").build();
+        this.coverWebClient = webClientBuilder
+                .clientConnector(new ReactorClientHttpConnector(
+                        HttpClient.create().followRedirect(true)
+                ))
+                .baseUrl("https://coverartarchive.org/").build();
     }
 
     @Override
     public Mono<ArtistCreateDTO> fetchArtist(String id) {
-        return webClient.get()
-                .uri(uriBuilder -> uriBuilder
-                        .path("/artist/{id}")
-                        .queryParam("inc", "release-groups+artist-rels")
-                        .queryParam("fmt", "json")
-                        .build(id))
-                .retrieve()
-                .bodyToMono(MusicBrainzArtistDTO.class)
-                .retryWhen(Retry.fixedDelay(MAX_ATTEMPTS, Duration.ofMillis(REQUEST_DELAY)))
+        List<String> types = List.of("album", "single", "ep", "soundtrack");
+
+        return Flux.fromIterable(types).flatMap(type -> webClient.get()
+                        .uri(uriBuilder -> uriBuilder
+                                .path("/artist/{id}")
+                                .queryParam("inc", "release-groups+artist-rels")
+                                .queryParam("fmt", "json")
+                                .queryParam("type", type)
+                                .build(id))
+                        .retrieve()
+                        .bodyToMono(MusicBrainzArtistDTO.class)
+                        .retryWhen(Retry.fixedDelay(MAX_ATTEMPTS, Duration.ofMillis(REQUEST_DELAY))))
                 .map(musicBrainzArtistDTO -> {
                     ArtistCreateDTO artistCreateDTO = new ArtistCreateDTO();
 
@@ -54,6 +68,27 @@ public class MusicBrainzService implements APIService {
                     }
 
                     return artistCreateDTO;
+                })
+                .collectList()
+                .map(artistCreateDTOs -> {
+                    ArtistCreateDTO artistCreateDTO = new ArtistCreateDTO();
+
+                    artistCreateDTO.setId(artistCreateDTOs.get(0).getId());
+                    artistCreateDTO.setName(artistCreateDTOs.get(0).getName());
+                    artistCreateDTO.setDisambiguation(artistCreateDTOs.get(0).getDisambiguation());
+                    artistCreateDTO.setType(artistCreateDTOs.get(0).getType());
+                    artistCreateDTO.setGender(artistCreateDTOs.get(0).getGender());
+                    artistCreateDTO.setArea(artistCreateDTOs.get(0).getArea());
+                    artistCreateDTO.setBeginArea(artistCreateDTOs.get(0).getBeginArea());
+                    artistCreateDTO.setRelations(artistCreateDTOs.get(0).getRelations());
+
+                    for (var artistCreateDTO2 : artistCreateDTOs) {
+                        for (var albumId : artistCreateDTO2.getAlbumIds()) {
+                            artistCreateDTO.addAlbumId(albumId);
+                        }
+                    }
+
+                    return artistCreateDTO;
                 });
     }
 
@@ -69,7 +104,9 @@ public class MusicBrainzService implements APIService {
                 .bodyToMono(MusicBrainzReleaseGroupDTO.class)
                 .retryWhen(Retry.fixedDelay(MAX_ATTEMPTS, Duration.ofMillis(REQUEST_DELAY)))
                 .flatMap(musicBrainzReleaseGroupDTO -> {
-                    String releaseId = musicBrainzReleaseGroupDTO.getReleases().get(0).getId();
+                    String releaseId = musicBrainzReleaseGroupDTO.getReleases().stream()
+                            .filter(release -> release.getMedias().get(0).getFormat().equalsIgnoreCase("Digital Media"))
+                            .findFirst().orElse(musicBrainzReleaseGroupDTO.getReleases().get(0)).getId();
 
                     return webClient.get()
                             .uri(uriBuilder -> uriBuilder
@@ -80,7 +117,7 @@ public class MusicBrainzService implements APIService {
                             .retrieve()
                             .bodyToMono(MusicBrainzReleaseDTO.class)
                             .retryWhen(Retry.fixedDelay(MAX_ATTEMPTS, Duration.ofMillis(REQUEST_DELAY)))
-                            .map(
+                            .flatMap(
                                     musicBrainzReleaseDTO -> {
                                         AlbumCreateDTO albumCreateDTO = new AlbumCreateDTO();
                                         albumCreateDTO.setId(musicBrainzReleaseDTO.getId());
@@ -149,7 +186,26 @@ public class MusicBrainzService implements APIService {
                                             }
                                         }
 
-                                        return albumCreateDTO;
+                                        return coverWebClient.get()
+                                                .uri(uriBuilder -> uriBuilder
+                                                        .path("/release-group/{id}")
+                                                        .build(id))
+                                                .retrieve()
+                                                .bodyToMono(CoverArchiveThumbDTO.class)
+                                                .map(Optional::ofNullable)
+                                                .retryWhen(Retry.fixedDelay(MAX_ATTEMPTS, Duration.ofMillis(REQUEST_DELAY)))
+                                                .onErrorResume(ex -> {
+                                                    return Mono.just(Optional.empty());
+                                                })
+                                                .map(coverArchiveThumbDTOOptional -> {
+                                                    coverArchiveThumbDTOOptional.ifPresent(coverArchiveThumbDTO -> {
+                                                        var thumb = coverArchiveThumbDTO.getImages().get(0).getThumbnails();
+                                                        albumCreateDTO.setThumbUrlSmall(thumb.getUrl250());
+                                                        albumCreateDTO.setThumbUrlMedium(thumb.getUrl500());
+                                                        albumCreateDTO.setThumbUrlLarge(thumb.getUrl1200());
+                                                    });
+                                                    return albumCreateDTO;
+                                                });
                                     }
                             );
                 });

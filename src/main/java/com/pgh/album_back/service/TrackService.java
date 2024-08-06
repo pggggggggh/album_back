@@ -4,6 +4,7 @@ import com.pgh.album_back.dto.AlbumCreateDTO;
 import com.pgh.album_back.dto.TrackCreateDTO;
 import com.pgh.album_back.entity.*;
 import com.pgh.album_back.repository.*;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,7 +22,7 @@ public class TrackService {
     private final ArtistRepository artistRepository;
 
     @Transactional
-    public void addTracksToAlbum(Album album, List<AlbumCreateDTO.AlbumTrack> albumTracks) {
+    public void addTracksToAlbum(String albumId, List<AlbumCreateDTO.AlbumTrack> albumTracks) {
         for (var dtoAlbumTrack : albumTracks) {
             TrackCreateDTO trackCreateDTO = dtoAlbumTrack.getTrack();
             Track track = trackRepository.findById(trackCreateDTO.getId())
@@ -29,6 +30,7 @@ public class TrackService {
                         Track newTrack = new Track(trackCreateDTO.getId());
                         newTrack.setTitle(trackCreateDTO.getTitle());
                         newTrack.setDisambiguation(trackCreateDTO.getDisambiguation());
+                        newTrack.setLength(trackCreateDTO.getLength());
                         newTrack.setDate(trackCreateDTO.getFirstReleaseDate());
                         return trackRepository.save(newTrack);
                     });
@@ -41,6 +43,7 @@ public class TrackService {
                             return artistRepository.save(newArtist);
                         });
 
+                if (trackArtistRepository.existsByTrackAndArtist(track,artist)) continue;
                 TrackArtist trackArtist = new TrackArtist(track, artist);
                 track.addArtist(trackArtist);
                 artist.addTrack(trackArtist);
@@ -57,6 +60,7 @@ public class TrackService {
                             return artistRepository.save(newArtist);
                         });
 
+                if (creditRepository.existsByArtistAndEntry(artist, track)) continue;
                 Credit credit = new Credit(artist, track);
                 credit.setTypes(dtoCredit.getTypes());
                 artist.addCredit(credit);
@@ -64,6 +68,9 @@ public class TrackService {
                 creditRepository.save(credit);
             }
 
+            Album album = albumRepository.findById(albumId).orElseThrow(EntityNotFoundException::new);
+
+            if (albumTrackRepository.existsByAlbumAndTrack(album,track)) continue;
             AlbumTrack albumTrack = new AlbumTrack(album, track);
             albumTrack.setNumber(dtoAlbumTrack.getNumber());
             albumTrack.setPosition(dtoAlbumTrack.getPosition());

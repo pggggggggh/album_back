@@ -35,7 +35,7 @@ public class ArtistCreateDTO {
     }
 
     public void addAlbumId(String id) {
-        albumIds.add(id);
+        if (!albumIds.contains(id)) albumIds.add(id);
     }
 
     public void addRelation(Relation relation) {

@@ -31,8 +31,6 @@ public class Entry extends BaseEntity {
     @OneToMany(mappedBy = "entry")
     protected Set<Credit> credits = new HashSet<>();
 
-    protected Double avgRating;
-
     @OneToMany(mappedBy = "entry")
     protected List<Review> reviews = new ArrayList<>();
 
@@ -42,5 +40,20 @@ public class Entry extends BaseEntity {
 
     public void addCredit(Credit credit) {
         credits.add(credit);
+    }
+
+    public void removeCredit(Credit credit) {
+        credits.remove(credit);
+    }
+
+    public Long getReviewCount() {
+        return (long) reviews.size();
+    }
+
+    public Double getAverageRating() {
+        return reviews.stream()
+                .mapToDouble(Review::getRating)
+                .average()
+                .orElse(0.0);
     }
 }

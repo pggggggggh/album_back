@@ -11,15 +11,13 @@ import java.util.List;
 @Setter
 public class AlbumSummaryDTO {
     private String id;
-
     private String title;
-
     private String disambiguation;
-
     private LocalDate date;
-
-    private Double avgRating;
-
+    private Long reviewCount;
+    private Double averageRating;
+    private String thumbUrlMedium;
+    private String thumbUrlSmall;
     private List<Artist> artists = new ArrayList<>();
 
     @Getter

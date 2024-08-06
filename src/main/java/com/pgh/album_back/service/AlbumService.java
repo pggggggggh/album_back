@@ -7,14 +7,15 @@ import com.pgh.album_back.entity.Artist;
 import com.pgh.album_back.repository.AlbumArtistRepository;
 import com.pgh.album_back.repository.AlbumRepository;
 import com.pgh.album_back.repository.ArtistRepository;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Arrays;
 import java.util.List;
-import java.util.NoSuchElementException;
 
 @Service
 @RequiredArgsConstructor
@@ -26,17 +27,29 @@ public class AlbumService {
 //    private final ArtistService artistService;
     private final APIService apiService;
 
-    @Transactional
-    public String createAlbum(String id) {
-        AlbumCreateDTO albumCreateDTO = apiService.fetchAlbum(id).blockOptional().orElseThrow(NoSuchElementException::new);
-        Album album = new Album(id);
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void createAlbum(String id, boolean allowTrivial) {
+        AlbumCreateDTO albumCreateDTO = apiService.fetchAlbum(id).blockOptional().orElseThrow(RuntimeException::new);
+        Album album = albumRepository.findById(id).orElseGet(() -> new Album(id));
+
+        if (!allowTrivial) {
+            List<String> valid = Arrays.asList("Album", "Single", "EP", "Soundtrack", "Remix");
+            for (String type : albumCreateDTO.getTypes()) {
+                if (!valid.contains(type)) {
+                    return;
+                }
+            }
+        }
 
         album.setTitle(albumCreateDTO.getTitle());
         album.setDisambiguation(albumCreateDTO.getDisambiguation());
         album.setDate(albumCreateDTO.getDate());
         album.setTypes(albumCreateDTO.getTypes());
-
-        album = albumRepository.save(album);
+        album.setThumbUrlSmall(albumCreateDTO.getThumbUrlSmall());
+        album.setThumbUrlMedium(albumCreateDTO.getThumbUrlMedium());
+        album.setThumbUrlLarge(albumCreateDTO.getThumbUrlLarge());
+        albumRepository.save(album);
+        trackService.addTracksToAlbum(id, albumCreateDTO.getAlbumTracks());
 
         for (var dtoArtist : albumCreateDTO.getArtists()) {
             Artist artist = artistRepository.findById(dtoArtist.getId())
@@ -46,27 +59,15 @@ public class AlbumService {
                         return artistRepository.save(newArtist);
                     });
 
+            if (albumArtistRepository.existsByAlbumAndArtist(album, artist)) continue;
             AlbumArtist albumArtist = new AlbumArtist(album, artist);
             artist.addAlbum(albumArtist);
             album.addArtist(albumArtist);
             albumArtistRepository.save(albumArtist);
         }
-
-        trackService.addTracksToAlbum(album, albumCreateDTO.getAlbumTracks());
-        return album.getId();
     }
 
-    @Transactional
-    public void addAlbumsOfArtist(String artistId, List<String> albumIds) {
-        Artist artist = artistRepository.findById(artistId).orElseThrow(EntityNotFoundException::new);
-
-        for (var albumId : albumIds) {
-            AlbumCreateDTO albumCreateDTO = apiService.fetchAlbum(albumId).block();
-            if (!albumRepository.existsById(albumId)) createAlbum(albumId);
-        }
-    }
-
-    public List<Album> getAlbums(Pageable pageable) {
+    public Page<Album> getAlbums(Pageable pageable) {
         return albumRepository.findAllByOrderByDateDesc(pageable);
     }
 }

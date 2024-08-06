@@ -18,6 +18,9 @@ public class AlbumCreateDTO {
     private List<Artist> artists = new ArrayList<>();
     private LocalDate date;
     private List<AlbumTrack> albumTracks = new ArrayList<>();
+    private String thumbUrlSmall;
+    private String thumbUrlMedium;
+    private String thumbUrlLarge;
 
     @Getter
     @Setter

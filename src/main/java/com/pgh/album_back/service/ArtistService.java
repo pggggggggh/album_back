@@ -7,14 +7,15 @@ import com.pgh.album_back.repository.ArtistRelationshipRepository;
 import com.pgh.album_back.repository.ArtistRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.NoSuchElementException;
-
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class ArtistService {
     private final ArtistRepository artistRepository;
     private final ArtistRelationshipRepository artistRelationshipRepository;
@@ -35,14 +36,11 @@ public class ArtistService {
         return artist.getId();
     }
 
-    @Transactional
-    public String fetchAndCreateArtist(String id) {
-        if (artistRepository.existsById(id)) {
-            return id;
-        }
-
-        ArtistCreateDTO artistCreateDTO = apiService.fetchArtist(id).blockOptional().orElseThrow(NoSuchElementException::new);
-        Artist artist = new Artist(id);
+    @Async
+    public void fetchAndCreateArtist(String id) {
+        ArtistCreateDTO artistCreateDTO = apiService.fetchArtist(id).blockOptional().orElseThrow();
+        // block 안하면 Transactional 붙은 함수가 subscribe 남겨놓고 리턴하면 세션이 끝나버려서 LazyException 뜸
+        Artist artist = artistRepository.findById(id).orElseGet(() -> new Artist(id));
 
         artist.setName(artistCreateDTO.getName());
         artist.setDisambiguation(artistCreateDTO.getDisambiguation());
@@ -55,9 +53,10 @@ public class ArtistService {
         artist.setBeginDate(artistCreateDTO.getBeginDate());
         artist.setEndDate(artistCreateDTO.getEndDate());
         artistRepository.save(artist);
-        albumService.addAlbumsOfArtist(id, artistCreateDTO.getAlbumIds());
 
-        return artist.getId();
+        for (var albumId : artistCreateDTO.getAlbumIds()) {
+            albumService.createAlbum(albumId, false);
+        }
     }
 
     @Transactional

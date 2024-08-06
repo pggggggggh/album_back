@@ -20,7 +20,7 @@ public class Review extends BaseEntity {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    private Short score;
+    private Short rating;
 
     private String title;
 

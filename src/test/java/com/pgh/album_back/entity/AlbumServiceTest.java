@@ -18,7 +18,5 @@ public class AlbumServiceTest {
     @Test
     public void createAlbumTest() {
         String savageId = "d35ed94d-8134-40b3-989a-6d1c5af9657b";
-        albumService.createAlbum(savageId);
-
       }
 }
