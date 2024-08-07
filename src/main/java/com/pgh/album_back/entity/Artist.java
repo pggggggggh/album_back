@@ -33,19 +33,19 @@ public class Artist extends BaseEntity {
     private LocalDate beginDate;
     private LocalDate endDate;
 
-    @OneToMany(mappedBy = "member")
+    @OneToMany(mappedBy = "member", orphanRemoval = true)
     private Set<ArtistRelationship> groups = new HashSet<>();
 
-    @OneToMany(mappedBy = "group")
+    @OneToMany(mappedBy = "group", orphanRemoval = true)
     private Set<ArtistRelationship> members = new HashSet<>();
 
-    @OneToMany(mappedBy = "artist")
+    @OneToMany(mappedBy = "artist", orphanRemoval = true)
     private Set<AlbumArtist> albums = new HashSet<>();
 
-    @OneToMany(mappedBy = "artist")
+    @OneToMany(mappedBy = "artist", orphanRemoval = true)
     private Set<TrackArtist> tracks = new HashSet<>();
 
-    @OneToMany(mappedBy = "artist")
+    @OneToMany(mappedBy = "artist", orphanRemoval = true)
     private Set<Credit> credits = new HashSet<>();
 
     public void addGroup(ArtistRelationship artistRelationship) {

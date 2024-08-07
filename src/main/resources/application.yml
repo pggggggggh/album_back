@@ -1,0 +1,11 @@
+spring:
+  application:
+    name: album_back
+  output:
+    ansi:
+      enabled: always
+
+jwt:
+  access_token_expiration_time: 900
+  access_token_refresh_time: 86400000
+  secret: "sadgasdhahaewhrewahgasagsdagdsagadsgasdgasdghgsafsdgsdagdgasg"

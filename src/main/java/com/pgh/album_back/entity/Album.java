@@ -24,11 +24,11 @@ public class Album extends Entry {
     @ElementCollection
     private List<String> types = new ArrayList<>();
 
-    @OneToMany(mappedBy = "album")
+    @OneToMany(mappedBy = "album", orphanRemoval = true)
     private Set<AlbumTrack> tracks = new HashSet<>();
 
     @Column(nullable = false)
-    @OneToMany(mappedBy = "album")
+    @OneToMany(mappedBy = "album", orphanRemoval = true)
     protected Set<AlbumArtist> artists = new HashSet<>();
 
     private String thumbUrlSmall; // 250

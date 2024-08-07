@@ -1,6 +1,10 @@
 package com.pgh.album_back.service;
 
 import com.pgh.album_back.dto.*;
+import com.pgh.album_back.dto.MusicBrainz.CoverArchiveThumbDTO;
+import com.pgh.album_back.dto.MusicBrainz.MusicBrainzArtistDTO;
+import com.pgh.album_back.dto.MusicBrainz.MusicBrainzReleaseDTO;
+import com.pgh.album_back.dto.MusicBrainz.MusicBrainzReleaseGroupDTO;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;

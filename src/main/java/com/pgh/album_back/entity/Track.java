@@ -17,11 +17,11 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 public class Track extends Entry {
-    @OneToMany(mappedBy = "track")
+    @OneToMany(mappedBy = "track", orphanRemoval = true)
     private List<AlbumTrack> albums = new ArrayList<>();
 
     @Column(nullable = false)
-    @OneToMany(mappedBy = "track")
+    @OneToMany(mappedBy = "track", orphanRemoval = true)
     protected List<TrackArtist> artists = new ArrayList<>();
 
     protected Long length;

@@ -28,7 +28,7 @@ public class Entry extends BaseEntity {
 
     protected LocalDate date;
 
-    @OneToMany(mappedBy = "entry")
+    @OneToMany(mappedBy = "entry", orphanRemoval = true)
     protected Set<Credit> credits = new HashSet<>();
 
     @OneToMany(mappedBy = "entry")

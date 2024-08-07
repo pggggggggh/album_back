@@ -1,4 +1,4 @@
-package com.pgh.album_back.dto;
+package com.pgh.album_back.dto.MusicBrainz;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
