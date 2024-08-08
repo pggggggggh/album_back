@@ -3,6 +3,7 @@ package com.pgh.album_back.dto;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,6 +21,9 @@ public class AlbumDetailsDTO extends EntryDetailsDTO {
         private int position;
         private String title;
         private Long length;
+        private Double averageRating;
+        private LocalDateTime createdAt;
+        private LocalDateTime updatedAt;
     }
 
     public void addAlbumTrack(AlbumTrack albumTrack) {

@@ -29,6 +29,6 @@ public class AuthService {
             throw new BadCredentialsException("Wrong password");
         }
 
-        return jwtUtil.createTokens(username);
+        return jwtUtil.createTokens(user.getUsername());
     }
 }

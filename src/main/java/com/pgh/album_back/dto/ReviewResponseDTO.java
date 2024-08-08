@@ -1,18 +1,14 @@
 package com.pgh.album_back.dto;
 
-import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
-public class RegisterRequestDTO {
-    @NotNull
+public class ReviewResponseDTO {
     private String username;
-
-    @NotNull
     private String nickname;
-
-    @NotNull
-    private String password;
+    private String title;
+    private String content;
+    private Short rating;
 }

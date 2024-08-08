@@ -51,9 +51,17 @@ public class Entry extends BaseEntity {
     }
 
     public Double getAverageRating() {
+        if (reviews == null || reviews.isEmpty()) {
+            return 0.0;
+        }
         return reviews.stream()
                 .mapToDouble(Review::getRating)
                 .average()
                 .orElse(0.0);
+    }
+
+    public void addReview(Review review) {
+        reviews.add(review);
+        review.setEntry(this);
     }
 }

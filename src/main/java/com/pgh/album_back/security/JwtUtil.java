@@ -34,6 +34,7 @@ public class JwtUtil {
         String refreshToken = createToken(username, refreshTokenExpire);
 
         return TokenDTO.builder()
+                .grantType("Bearer")
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
                 .build();
@@ -52,7 +53,7 @@ public class JwtUtil {
     }
 
     public String getUsername(String token) {
-        return parseClaims(token).get("userId",String.class);
+        return parseClaims(token).get("sub",String.class);
     }
 
     public boolean validateToken(String token) {

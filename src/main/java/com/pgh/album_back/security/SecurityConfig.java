@@ -36,9 +36,8 @@ public class SecurityConfig {
         http.httpBasic(AbstractHttpConfigurer::disable);
         http.addFilterBefore(new JwtAuthFilter(jwtUtil, userDetailsServiceImpl), UsernamePasswordAuthenticationFilter.class);
         http.authorizeHttpRequests(authorize -> {
-            authorize.requestMatchers(HttpMethod.POST, "/api/users").permitAll();
-            authorize.requestMatchers(HttpMethod.POST, "/api/users").permitAll();
-            authorize.anyRequest().authenticated();
+            authorize.requestMatchers(HttpMethod.GET, "/api/users/me").authenticated();
+            authorize.anyRequest().permitAll();
         });
 
         return http.build();

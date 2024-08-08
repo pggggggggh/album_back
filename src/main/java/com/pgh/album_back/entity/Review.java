@@ -1,5 +1,6 @@
 package com.pgh.album_back.entity;
 
+import com.pgh.album_back.dto.ReviewResponseDTO;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -20,9 +21,20 @@ public class Review extends BaseEntity {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
+    @Column(nullable = false)
     private Short rating;
 
     private String title;
 
     private String content;
+
+    public ReviewResponseDTO toReviewResponseDTO() {
+        ReviewResponseDTO reviewResponseDTO = new ReviewResponseDTO();
+        reviewResponseDTO.setUsername(user.getUsername());
+        reviewResponseDTO.setNickname(user.getNickname());
+        reviewResponseDTO.setTitle(title);
+        reviewResponseDTO.setContent(content);
+        reviewResponseDTO.setRating(rating);
+        return reviewResponseDTO;
+    }
 }

@@ -1,5 +1,6 @@
 package com.pgh.album_back.service;
 
+import com.pgh.album_back.constant.Role;
 import com.pgh.album_back.dto.RegisterRequestDTO;
 import com.pgh.album_back.dto.TokenDTO;
 import com.pgh.album_back.entity.User;
@@ -29,6 +30,8 @@ public class UserService {
         user.setUsername(registerRequestDTO.getUsername());
         user.setNickname(registerRequestDTO.getNickname());
         user.setPassword(passwordEncoder.encode(registerRequestDTO.getPassword()));
+        user.setRole(Role.USER);
+        userRepository.save(user);
 
         return jwtUtil.createTokens(user.getUsername());
     }

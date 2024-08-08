@@ -58,6 +58,7 @@ public class Track extends Entry {
             dtoCredit.setArtistId(credit.getArtist().getId());
             dtoCredit.setArtistName(credit.getArtist().getName());
 
+
             trackDetailsDTO.addCredit(dtoCredit);
         });
         reviews.forEach(review -> {
@@ -67,6 +68,8 @@ public class Track extends Entry {
             dtoReview.setRating(review.getRating());
             dtoReview.setTitle(review.getTitle());
             dtoReview.setContent(review.getContent());
+            dtoReview.setCreatedAt(review.getCreatedAt());
+            dtoReview.setUpdatedAt(review.getUpdatedAt());
 
             trackDetailsDTO.addReview(dtoReview);
         });

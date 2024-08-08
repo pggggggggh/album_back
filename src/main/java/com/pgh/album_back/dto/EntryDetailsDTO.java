@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,6 +23,7 @@ public class EntryDetailsDTO {
     private List<Artist> artists = new ArrayList<>();
     private List<Credit> credits = new ArrayList<>();
     private List<Review> reviews = new ArrayList<>();
+    private Review myReview;
 
     @Getter
     @Setter
@@ -46,6 +48,8 @@ public class EntryDetailsDTO {
         private Short rating;
         private String title;
         private String content;
+        private LocalDateTime createdAt;
+        private LocalDateTime updatedAt;
     }
 
     public void addArtist(Artist artist) {

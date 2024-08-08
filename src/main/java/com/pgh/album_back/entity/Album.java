@@ -87,6 +87,8 @@ public class Album extends Entry {
             dtoReview.setRating(review.getRating());
             dtoReview.setTitle(review.getTitle());
             dtoReview.setContent(review.getContent());
+            dtoReview.setCreatedAt(review.getCreatedAt());
+            dtoReview.setUpdatedAt(review.getUpdatedAt());
 
             albumDetailsDTO.addReview(dtoReview);
         });
@@ -103,6 +105,7 @@ public class Album extends Entry {
             dtoAlbumTrack.setPosition(albumTrack.getPosition());
             dtoAlbumTrack.setTitle(track.getTitle());
             dtoAlbumTrack.setLength(track.getLength());
+            dtoAlbumTrack.setAverageRating(track.getAverageRating());
             albumDetailsDTO.addAlbumTrack(dtoAlbumTrack);
         });
         artists.forEach(albumArtist -> {
