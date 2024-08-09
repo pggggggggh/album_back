@@ -52,6 +52,7 @@ public class Track extends Entry {
 
         trackDetailsDTO.setReviewCount(getReviewCount());
         trackDetailsDTO.setAverageRating(getAverageRating());
+        trackDetailsDTO.setGenres(getGenreNames());
         credits.forEach(credit -> {
             EntryDetailsDTO.Credit dtoCredit = new EntryDetailsDTO.Credit();
             dtoCredit.setTypes(credit.getTypes());

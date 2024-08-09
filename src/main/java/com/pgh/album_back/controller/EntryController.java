@@ -9,6 +9,7 @@ import com.pgh.album_back.entity.Review;
 import com.pgh.album_back.entity.User;
 import com.pgh.album_back.repository.*;
 import com.pgh.album_back.service.AlbumService;
+import com.pgh.album_back.service.EntryService;
 import com.pgh.album_back.service.ReviewService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
@@ -23,6 +24,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -36,6 +38,7 @@ public class EntryController {
     private final ReviewService reviewService;
     private final ReviewRepository reviewRepository;
     private final EntryRepository entryRepository;
+    private final EntryService entryService;
 
     @GetMapping("/albums")
     public ResponseEntity<Page<AlbumSummaryDTO>> getAlbums(
@@ -104,6 +107,26 @@ public class EntryController {
 
         reviewService.updateReview(entryId, userDetails.getUsername(), addReviewDTO);
         return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    @GetMapping("/entries/{entryId}/genres/vote")
+    public ResponseEntity<?> getMyVotes(
+            @AuthenticationPrincipal UserDetails userDetails,
+            @PathVariable String entryId) {
+        if (userDetails == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+
+        return ResponseEntity.ok(entryService.getMyVotes(entryId, userDetails.getUsername()));
+    }
+
+    @PostMapping("/entries/{entryId}/genres/vote")
+    public ResponseEntity<?> voteGenre(
+            @AuthenticationPrincipal UserDetails userDetails,
+            @PathVariable String entryId,
+            @RequestBody List<String> genreNames) {
+        if (userDetails == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+
+        entryService.addVote(entryId, userDetails.getUsername(), genreNames);
+        return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/entries/{entryId}/reviews")

@@ -72,6 +72,7 @@ public class Album extends Entry {
         albumDetailsDTO.setDate(date);
         albumDetailsDTO.setReviewCount(getReviewCount());
         albumDetailsDTO.setAverageRating(getAverageRating());
+        albumDetailsDTO.setGenres(getGenreNames());
         credits.forEach(credit -> {
             EntryDetailsDTO.Credit dtoCredit = new EntryDetailsDTO.Credit();
             dtoCredit.setTypes(credit.getTypes());

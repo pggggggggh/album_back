@@ -31,4 +31,8 @@ public class AuthService {
 
         return jwtUtil.createTokens(user.getUsername());
     }
+
+    public String refreshToken(String username) {
+        return jwtUtil.createAccessToken(username);
+    }
 }

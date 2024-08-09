@@ -6,6 +6,6 @@ spring:
       enabled: always
 
 jwt:
-  access_token_expiration_time: 900
+  access_token_expiration_time: 600
   access_token_refresh_time: 86400000
   secret: "sadgasdhahaewhrewahgasagsdagdsagadsgasdgasdghgsafsdgsdagdgasg"

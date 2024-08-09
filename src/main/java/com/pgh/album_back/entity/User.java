@@ -31,8 +31,16 @@ public class User extends BaseEntity {
     @OneToMany(mappedBy = "user")
     private List<Review> reviews = new ArrayList<>();
 
+    @OneToMany(mappedBy = "user")
+    private List<GenreVote> genreVotes = new ArrayList<>();
+
     public void addReview(Review review) {
         reviews.add(review);
         review.setUser(this);
+    }
+
+    public void addGenreVote(GenreVote genreVote) {
+        genreVotes.add(genreVote);
+        genreVote.setUser(this);
     }
 }

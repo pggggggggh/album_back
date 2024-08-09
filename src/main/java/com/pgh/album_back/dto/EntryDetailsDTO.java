@@ -6,7 +6,9 @@ import lombok.Setter;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Getter
 @Setter
@@ -23,6 +25,7 @@ public class EntryDetailsDTO {
     private List<Artist> artists = new ArrayList<>();
     private List<Credit> credits = new ArrayList<>();
     private List<Review> reviews = new ArrayList<>();
+    private Map<String, Integer> genres = new HashMap<>();
     private Review myReview;
 
     @Getter

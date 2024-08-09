@@ -52,6 +52,18 @@ public class JwtUtil {
                 .compact();
     }
 
+    public String createAccessToken(String subject) {
+        ZonedDateTime now = ZonedDateTime.now();
+        ZonedDateTime expiresAt = now.plusSeconds(accessTokenExpire);
+
+        return Jwts.builder()
+                .setSubject(subject)
+                .setIssuedAt(Date.from(now.toInstant()))
+                .setExpiration(Date.from(expiresAt.toInstant()))
+                .signWith(key)
+                .compact();
+    }
+
     public String getUsername(String token) {
         return parseClaims(token).get("sub",String.class);
     }

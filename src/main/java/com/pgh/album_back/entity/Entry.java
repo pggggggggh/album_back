@@ -6,10 +6,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Getter
 @Setter
@@ -33,6 +31,9 @@ public class Entry extends BaseEntity {
 
     @OneToMany(mappedBy = "entry")
     protected List<Review> reviews = new ArrayList<>();
+
+    @OneToMany(mappedBy = "entry")
+    protected List<GenreVote> genreVotes = new ArrayList<>();
 
     public Entry(String id) {
         this.id = id;
@@ -60,8 +61,27 @@ public class Entry extends BaseEntity {
                 .orElse(0.0);
     }
 
+    public Map<String, Integer> getGenreNames() {
+        return genreVotes.stream()
+                .collect(Collectors.groupingBy(
+                        GenreVote::getGenre,
+                        Collectors.summingInt(GenreVote::getVotes)))
+                .entrySet().stream()
+                .sorted(Map.Entry.<Genre, Integer>comparingByValue().reversed())
+                .limit(5)
+                .collect(Collectors.toMap(
+                        entry -> entry.getKey().getName(),
+                        Map.Entry::getValue
+                ));
+    }
+
     public void addReview(Review review) {
         reviews.add(review);
         review.setEntry(this);
+    }
+
+    public void addGenreVote(GenreVote genreVote) {
+        genreVotes.add(genreVote);
+        genreVote.setEntry(this);
     }
 }
