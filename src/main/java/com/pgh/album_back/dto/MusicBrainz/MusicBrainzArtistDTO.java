@@ -1,6 +1,8 @@
 package com.pgh.album_back.dto.MusicBrainz;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.pgh.album_back.deserializer.LocalDateDeserializer;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -58,8 +60,10 @@ public class MusicBrainzArtistDTO {
     @Getter
     @Setter
     public static class LifeSpan {
+        @JsonDeserialize(using = LocalDateDeserializer.class)
         LocalDate begin;
         Boolean ended;
+        @JsonDeserialize(using = LocalDateDeserializer.class)
         LocalDate end;
     }
 }

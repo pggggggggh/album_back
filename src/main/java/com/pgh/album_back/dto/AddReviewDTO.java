@@ -9,10 +9,8 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 public class AddReviewDTO {
-    @NotNull
     private String title;
 
-    @NotNull
     private String content;
 
     @NotNull
