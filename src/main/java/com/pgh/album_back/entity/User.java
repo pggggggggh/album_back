@@ -28,6 +28,11 @@ public class User extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private Role role;
 
+    private Long point = 0L;
+
+    @OneToMany(mappedBy = "user")
+    private List<Notification> notifications = new ArrayList<>();
+
     @OneToMany(mappedBy = "user")
     private List<Review> reviews = new ArrayList<>();
 
@@ -42,5 +47,18 @@ public class User extends BaseEntity {
     public void addGenreVote(GenreVote genreVote) {
         genreVotes.add(genreVote);
         genreVote.setUser(this);
+    }
+
+    public void addNotification(Notification notification) {
+        notifications.add(notification);
+        notification.setUser(this);
+    }
+
+    public Long getReviewCount() { // review 중 title이 있는 것들
+        return reviews.stream().filter(review -> !review.getTitle().isEmpty()).count();
+    }
+
+    public Long getRatingCount() {
+        return (long) reviews.size();
     }
 }

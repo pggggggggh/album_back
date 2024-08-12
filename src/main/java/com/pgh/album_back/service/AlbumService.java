@@ -67,7 +67,13 @@ public class AlbumService {
         }
     }
 
-    public Page<Album> getAlbums(Pageable pageable) {
-        return albumRepository.findAllByOrderByDateDesc(pageable);
+    public Page<Album> getAlbums(Pageable pageable, String keyword, String sort) {
+        if (sort.equalsIgnoreCase("random"))
+            return albumRepository.findByKeywordOrderByRandom(keyword, pageable);
+
+        if (sort.equalsIgnoreCase("most_reviewed"))
+            return albumRepository.findByKeywordOrderByMostReviewed(keyword, pageable);
+
+        return albumRepository.findByKeywordOrderByDateDesc(keyword, pageable);
     }
 }

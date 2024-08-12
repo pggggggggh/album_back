@@ -22,6 +22,7 @@ public class AlbumDetailsDTO extends EntryDetailsDTO {
         private String title;
         private Long length;
         private Double averageRating;
+        private Long reviewCount;
         private LocalDateTime createdAt;
         private LocalDateTime updatedAt;
     }

@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 @Entity
@@ -38,18 +39,14 @@ public class Track extends Entry {
         super(id);
     }
 
+
+
     public TrackDetailsDTO toTrackDetailsDTO() {
         TrackDetailsDTO trackDetailsDTO = new TrackDetailsDTO();
         trackDetailsDTO.setId(id);
         trackDetailsDTO.setTitle(title);
         trackDetailsDTO.setDisambiguation(disambiguation);
         trackDetailsDTO.setDate(date);
-
-        Album primaryAlbum = albums.get(0).getAlbum();
-        trackDetailsDTO.setThumbUrlLarge(primaryAlbum.getThumbUrlLarge());
-        trackDetailsDTO.setThumbUrlMedium(primaryAlbum.getThumbUrlMedium());
-        trackDetailsDTO.setThumbUrlSmall(primaryAlbum.getThumbUrlSmall());
-
         trackDetailsDTO.setReviewCount(getReviewCount());
         trackDetailsDTO.setAverageRating(getAverageRating());
         trackDetailsDTO.setGenres(getGenreNames());
@@ -58,7 +55,6 @@ public class Track extends Entry {
             dtoCredit.setTypes(credit.getTypes());
             dtoCredit.setArtistId(credit.getArtist().getId());
             dtoCredit.setArtistName(credit.getArtist().getName());
-
 
             trackDetailsDTO.addCredit(dtoCredit);
         });
@@ -74,14 +70,35 @@ public class Track extends Entry {
 
             trackDetailsDTO.addReview(dtoReview);
         });
-
-        trackDetailsDTO.setLength(length);
         artists.forEach(trackArtist -> {
             EntryDetailsDTO.Artist dtoArtist = new EntryDetailsDTO.Artist();
             dtoArtist.setId(trackArtist.getArtist().getId());
             dtoArtist.setName(trackArtist.getArtist().getName());
             trackDetailsDTO.addArtist(dtoArtist);
         });
+
+        // 여기부터 트랙 전용
+        List<Album> appearsAt = albums.stream().map(AlbumTrack::getAlbum)
+                .sorted(Comparator.comparing(Album::getDate)).toList();
+        Album primaryAlbum = appearsAt.get(0);
+        trackDetailsDTO.setThumbUrlLarge(primaryAlbum.getThumbUrlLarge());
+        trackDetailsDTO.setThumbUrlMedium(primaryAlbum.getThumbUrlMedium());
+        trackDetailsDTO.setThumbUrlSmall(primaryAlbum.getThumbUrlSmall());
+        albums.forEach(albumTrack -> {
+            TrackDetailsDTO.Album album = new TrackDetailsDTO.Album();
+            album.setAlbumId(albumTrack.getAlbum().getId());
+            album.setAlbumTitle(albumTrack.getAlbum().getTitle());
+            album.setAlbumAverageRating(albumTrack.getAlbum().getAverageRating());
+            album.setAlbumReviewCount(albumTrack.getAlbum().getReviewCount());
+            album.setNumber(albumTrack.getNumber());
+
+            trackDetailsDTO.addAppearsAt(album);
+        });
+
+        trackDetailsDTO.setLength(length);
+
+
+
 
         return trackDetailsDTO;
     }

@@ -10,5 +10,5 @@ public class ReviewResponseDTO {
     private String nickname;
     private String title;
     private String content;
-    private Short rating;
+    private Double rating;
 }

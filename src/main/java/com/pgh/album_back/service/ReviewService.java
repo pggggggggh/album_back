@@ -1,9 +1,7 @@
 package com.pgh.album_back.service;
 
 import com.pgh.album_back.dto.AddReviewDTO;
-import com.pgh.album_back.entity.Entry;
-import com.pgh.album_back.entity.Review;
-import com.pgh.album_back.entity.User;
+import com.pgh.album_back.entity.*;
 import com.pgh.album_back.repository.EntryRepository;
 import com.pgh.album_back.repository.ReviewRepository;
 import com.pgh.album_back.repository.UserRepository;
@@ -21,6 +19,7 @@ public class ReviewService {
     private final ReviewRepository reviewRepository;
     private final UserRepository userRepository;
     private final EntryRepository entryRepository;
+    private final PointService pointService;
 
     @Transactional
     public void updateReview(String entryId, String username, AddReviewDTO addReviewDTO) {
@@ -51,6 +50,8 @@ public class ReviewService {
         user.addReview(review);
         entry.addReview(review);
         reviewRepository.save(review);
+
+        if (entry instanceof Track) pointService.checkAllReviewed((Track)entry,user);
     }
 
     @Transactional

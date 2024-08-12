@@ -48,7 +48,11 @@ public class EntryDetailsDTO {
     public static class Review {
         private String username;
         private String userNickname;
-        private Short rating;
+        private Double rating;
+        private List<String> genreVotes;
+        private String trackId;
+        private String trackNumber;
+        private String trackTitle;
         private String title;
         private String content;
         private LocalDateTime createdAt;

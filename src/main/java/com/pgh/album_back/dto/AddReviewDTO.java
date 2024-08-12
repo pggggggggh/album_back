@@ -14,5 +14,5 @@ public class AddReviewDTO {
     private String content;
 
     @NotNull
-    private Short rating;
+    private Double rating;
 }

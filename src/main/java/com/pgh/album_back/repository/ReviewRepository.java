@@ -11,4 +11,5 @@ import java.util.Optional;
 public interface ReviewRepository extends JpaRepository<Review,Long> {
     List<Review> findAllByEntryOrderByCreatedAtDesc(Entry entry);
     Optional<Review> findFirstByUserAndEntry(User user,Entry entry);
+    boolean existsByUserAndEntry(User user,Entry entry);
 }

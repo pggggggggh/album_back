@@ -44,19 +44,21 @@ public class EntryController {
     @GetMapping("/albums")
     public ResponseEntity<Page<AlbumSummaryDTO>> getAlbums(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "8") int size) {
+            @RequestParam(defaultValue = "8") int size,
+            @RequestParam(defaultValue = "") String keyword,
+            @RequestParam(defaultValue = "") String sort) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<Album> albumPage = albumService.getAlbums(pageable);
+        Page<Album> albumPage = albumService.getAlbums(pageable,keyword,sort);
         Page<AlbumSummaryDTO> dtoPage = albumPage.map(Album::toAlbumSummaryDTO);
         return ResponseEntity.ok(dtoPage);
     }
 
     @Transactional
-    @GetMapping("/{type}/details")
+    @GetMapping("/{type}/{id}/details")
     public ResponseEntity<?> getEntryDetails(
             @AuthenticationPrincipal UserDetails userDetails,
             @PathVariable String type,
-            @RequestParam String id) {
+            @PathVariable String id) {
         if (type.equalsIgnoreCase("albums")) {
             AlbumDetailsDTO albumDetailsDTO = albumRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Album not found"))
                     .toAlbumDetailsDTO();
@@ -75,6 +77,7 @@ public class EntryController {
                     myReviewDto.setContent(myReview.getContent());
                     myReviewDto.setCreatedAt(myReview.getCreatedAt());
                     myReviewDto.setUpdatedAt(myReview.getUpdatedAt());
+                    myReviewDto.setGenreVotes(entryService.getMyVotes(id, userDetails.getUsername()));
 
                     albumDetailsDTO.setMyReview(myReviewDto);
                 }
