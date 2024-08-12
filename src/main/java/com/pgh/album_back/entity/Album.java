@@ -77,6 +77,7 @@ public class Album extends Entry {
     }
 
     public AlbumSummaryDTO toAlbumSummaryDTO() {
+        update();
         AlbumSummaryDTO albumSummaryDTO = new AlbumSummaryDTO();
         albumSummaryDTO.setId(id);
         albumSummaryDTO.setTitle(title);
@@ -123,6 +124,7 @@ public class Album extends Entry {
     }
 
     public AlbumDetailsDTO toAlbumDetailsDTO() {
+        update();
         AlbumDetailsDTO albumDetailsDTO = new AlbumDetailsDTO();
         albumDetailsDTO.setId(id);
         albumDetailsDTO.setTitle(title);

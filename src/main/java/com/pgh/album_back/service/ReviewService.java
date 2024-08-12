@@ -32,6 +32,8 @@ public class ReviewService {
         review.setContent(addReviewDTO.getContent());
         review.setRating(addReviewDTO.getRating());
         reviewRepository.save(review);
+
+        if (entry instanceof Track) pointService.checkAllReviewed((Track)entry,user);
     }
 
     @Transactional

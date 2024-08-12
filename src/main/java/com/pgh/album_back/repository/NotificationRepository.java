@@ -8,4 +8,5 @@ import java.util.List;
 
 public interface NotificationRepository extends JpaRepository<Notification, Long> {
     List<Notification> findTop5ByUserOrderByCreatedAtDesc(User user);
+    boolean existsByUserAndTitleAndContent(User user, String title, String content);
 }

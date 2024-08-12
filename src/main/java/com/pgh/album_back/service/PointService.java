@@ -1,9 +1,6 @@
 package com.pgh.album_back.service;
 
-import com.pgh.album_back.entity.Album;
-import com.pgh.album_back.entity.Notification;
-import com.pgh.album_back.entity.Track;
-import com.pgh.album_back.entity.User;
+import com.pgh.album_back.entity.*;
 import com.pgh.album_back.repository.NotificationRepository;
 import com.pgh.album_back.repository.ReviewRepository;
 import lombok.RequiredArgsConstructor;
@@ -26,15 +23,28 @@ public class PointService {
                     flag = 0;
                     break;
                 }
+
+                Review review = reviewRepository.findFirstByUserAndEntry(user, track2)
+                        .orElse(null);
+                if (review == null || review.getTitle().isEmpty()) {
+                    flag = 0;
+                    break;
+                }
             }
             if (flag == 0) return;
 
             int pointsToAdd = 3;
+            String title = "축하합니다!";
+            String content = album.getTitle() + "의 모든 트랙에 한줄평/리뷰를 작성하여 " + pointsToAdd +
+                    "포인트를 지급받으셨습니다!";
+
+            if (notificationRepository.existsByUserAndTitleAndContent(user,title,content)) return;
+
             Notification notification = new Notification();
             user.addNotification(notification);
-            notification.setTitle("축하합니다!");
-            notification.setContent(album.getTitle() + "의 모든 트랙을 리뷰하여 " + pointsToAdd +
-                    "포인트를 지급받으셨습니다!");
+            notification.setTitle(title);
+            notification.setContent(content);
+
             notificationRepository.save(notification);
             user.setPoint(user.getPoint() + pointsToAdd);
         }
