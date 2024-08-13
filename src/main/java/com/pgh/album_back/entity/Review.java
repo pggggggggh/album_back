@@ -4,10 +4,12 @@ import com.pgh.album_back.dto.ReviewResponseDTO;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.SoftDelete;
 
 @Entity
 @Getter
 @Setter
+@SoftDelete
 public class Review extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

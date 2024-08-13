@@ -9,7 +9,6 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,7 +35,7 @@ public class ArtistService {
         return artist.getId();
     }
 
-    @Async
+    @Transactional
     public void fetchAndCreateArtist(String id) {
         ArtistCreateDTO artistCreateDTO = apiService.fetchArtist(id).blockOptional().orElseThrow();
         // block 안하면 Transactional 붙은 함수가 subscribe 남겨놓고 리턴하면 세션이 끝나버려서 LazyException 뜸

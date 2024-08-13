@@ -4,14 +4,15 @@ import com.pgh.album_back.dto.AlbumCreateDTO;
 import com.pgh.album_back.entity.Album;
 import com.pgh.album_back.entity.AlbumArtist;
 import com.pgh.album_back.entity.Artist;
+import com.pgh.album_back.entity.Thumbnail;
 import com.pgh.album_back.repository.AlbumArtistRepository;
 import com.pgh.album_back.repository.AlbumRepository;
 import com.pgh.album_back.repository.ArtistRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
@@ -19,6 +20,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class AlbumService {
     private final AlbumRepository albumRepository;
     private final ArtistRepository artistRepository;
@@ -26,8 +28,9 @@ public class AlbumService {
     private final TrackService trackService;
 //    private final ArtistService artistService;
     private final APIService apiService;
+    private final ThumbnailService thumbnailService;
 
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    @Transactional
     public void createAlbum(String id, boolean allowTrivial) {
         AlbumCreateDTO albumCreateDTO = apiService.fetchAlbum(id).blockOptional().orElseThrow(RuntimeException::new);
         Album album = albumRepository.findById(id).orElseGet(() -> new Album(id));
@@ -40,15 +43,23 @@ public class AlbumService {
                 }
             }
         }
+        log.info("crawling " + albumCreateDTO.getTitle());
 
         album.setTitle(albumCreateDTO.getTitle());
         album.setDisambiguation(albumCreateDTO.getDisambiguation());
         album.setDate(albumCreateDTO.getDate());
         album.setTypes(albumCreateDTO.getTypes());
-        album.setThumbUrlSmall(albumCreateDTO.getThumbUrlSmall());
-        album.setThumbUrlMedium(albumCreateDTO.getThumbUrlMedium());
-        album.setThumbUrlLarge(albumCreateDTO.getThumbUrlLarge());
+
+        Thumbnail thumbSmall = thumbnailService.downloadThumbnail(albumCreateDTO.getThumbUrlSmall());
+        Thumbnail thumbMedium = thumbnailService.downloadThumbnail(albumCreateDTO.getThumbUrlMedium());
+        Thumbnail thumbLarge = thumbnailService.downloadThumbnail(albumCreateDTO.getThumbUrlLarge());
+
+        album.setThumbSmall(thumbSmall);
+        album.setThumbMedium(thumbMedium);
+        album.setThumbLarge(thumbLarge);
+
         albumRepository.save(album);
+
         trackService.addTracksToAlbum(id, albumCreateDTO.getAlbumTracks());
 
         for (var dtoArtist : albumCreateDTO.getArtists()) {

@@ -4,6 +4,8 @@ spring:
   output:
     ansi:
       enabled: always
+  profiles:
+    default: prod
 
 jwt:
   access_token_expiration_time: 1800

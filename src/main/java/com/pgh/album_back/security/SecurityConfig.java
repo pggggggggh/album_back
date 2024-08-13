@@ -36,9 +36,10 @@ public class SecurityConfig {
         http.httpBasic(AbstractHttpConfigurer::disable);
         http.addFilterBefore(new JwtAuthFilter(jwtUtil, userDetailsServiceImpl), UsernamePasswordAuthenticationFilter.class);
         http.authorizeHttpRequests(authorize -> {
-            authorize.requestMatchers(HttpMethod.GET, "/api/albums","/api/tracks/*/details", "/api/albums/*/details"
-            ,"/api/entries/*/reviews").permitAll();
+            authorize.requestMatchers(HttpMethod.GET, "/images/**","/api/albums","/api/tracks/*/details", "/api/albums/*/details"
+            ,"/api/entries/*/reviews","/api/reviews").permitAll();
             authorize.requestMatchers(HttpMethod.POST, "/api/users","/api/users/login","/api/users/refresh-token").permitAll();
+
             authorize.anyRequest().authenticated();
         });
         http.exceptionHandling((exceptionConfig) -> {

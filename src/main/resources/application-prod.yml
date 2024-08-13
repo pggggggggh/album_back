@@ -1,0 +1,20 @@
+server:
+  port: 80
+
+spring:
+  datasource:
+    driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
+    url: jdbc:sqlserver://album.database.windows.net:1433;database=album;user=niceghp12@album;password=qkrrjsgnl1!;encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.database.windows.net;loginTimeout=30;
+
+  jpa:
+    properties:
+      physical_naming_strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+    hibernate:
+      ddl-auto: update
+    database-platform: org.hibernate.dialect.SQLServerDialect
+
+resourcePath: "file:///C:/images/"
+
+#logging:
+#  level:
+#    org.hibernate.orm.jdbc.bind: trace

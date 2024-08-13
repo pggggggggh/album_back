@@ -4,6 +4,7 @@ import com.pgh.album_back.constant.Role;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.SoftDelete;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,6 +12,8 @@ import java.util.List;
 @Entity
 @Getter
 @Setter
+@Table(name = "[user]")
+@SoftDelete
 public class User extends BaseEntity {
     @Id
     @Column(name = "user_id")

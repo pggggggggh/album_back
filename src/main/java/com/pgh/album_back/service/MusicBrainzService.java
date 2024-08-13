@@ -1,16 +1,17 @@
 package com.pgh.album_back.service;
 
-import com.pgh.album_back.dto.*;
+import com.pgh.album_back.dto.AlbumCreateDTO;
+import com.pgh.album_back.dto.ArtistCreateDTO;
 import com.pgh.album_back.dto.MusicBrainz.CoverArchiveThumbDTO;
 import com.pgh.album_back.dto.MusicBrainz.MusicBrainzArtistDTO;
 import com.pgh.album_back.dto.MusicBrainz.MusicBrainzReleaseDTO;
 import com.pgh.album_back.dto.MusicBrainz.MusicBrainzReleaseGroupDTO;
-import org.springframework.http.client.reactive.ReactorClientHttpConnector;
+import com.pgh.album_back.dto.TrackCreateDTO;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-import reactor.netty.http.client.HttpClient;
 import reactor.util.retry.Retry;
 
 import java.time.Duration;
@@ -22,23 +23,20 @@ import java.util.Optional;
 public class MusicBrainzService implements APIService {
     public static final long REQUEST_DELAY = 5000;
     public static final long MAX_ATTEMPTS = 5;
-    private final WebClient webClient;
-    private final WebClient coverWebClient;
+    private final WebClient musicBrainzWebClient;
+    private final WebClient coverArtWebClient;
 
-    public MusicBrainzService(WebClient.Builder webClientBuilder) {
-        this.webClient = webClientBuilder.baseUrl("https://musicbrainz.org/ws/2").build();
-        this.coverWebClient = webClientBuilder
-                .clientConnector(new ReactorClientHttpConnector(
-                        HttpClient.create().followRedirect(true)
-                ))
-                .baseUrl("https://coverartarchive.org/").build();
+    public MusicBrainzService(@Qualifier("MusicBrainzWebClient") WebClient musicBrainzWebClient,
+                              @Qualifier("CoverArtWebClient") WebClient coverArtWebClient) {
+        this.musicBrainzWebClient = musicBrainzWebClient;
+        this.coverArtWebClient = coverArtWebClient;
     }
 
     @Override
     public Mono<ArtistCreateDTO> fetchArtist(String id) {
         List<String> types = List.of("album", "single", "ep", "soundtrack");
 
-        return Flux.fromIterable(types).flatMap(type -> webClient.get()
+        return Flux.fromIterable(types).flatMap(type -> musicBrainzWebClient.get()
                         .uri(uriBuilder -> uriBuilder
                                 .path("/artist/{id}")
                                 .queryParam("inc", "release-groups+artist-rels")
@@ -98,7 +96,7 @@ public class MusicBrainzService implements APIService {
 
     @Override
     public Mono<AlbumCreateDTO> fetchAlbum(String id) {
-        return webClient.get()
+        return musicBrainzWebClient.get()
                 .uri(uriBuilder -> uriBuilder
                         .path("/release-group/{id}")
                         .queryParam("inc", "releases+media")
@@ -112,7 +110,7 @@ public class MusicBrainzService implements APIService {
                             .filter(release -> release.getMedias().get(0).getFormat().equalsIgnoreCase("Digital Media"))
                             .findFirst().orElse(musicBrainzReleaseGroupDTO.getReleases().get(0)).getId();
 
-                    return webClient.get()
+                    return musicBrainzWebClient.get()
                             .uri(uriBuilder -> uriBuilder
                                     .path("/release/{releaseId}")
                                     .queryParam("inc", "recordings+release-groups+artists+work-rels+work-level-rels+artist-rels+recording-level-rels+artist-credits")
@@ -190,7 +188,7 @@ public class MusicBrainzService implements APIService {
                                             }
                                         }
 
-                                        return coverWebClient.get()
+                                        return coverArtWebClient.get()
                                                 .uri(uriBuilder -> uriBuilder
                                                         .path("/release-group/{id}")
                                                         .build(id))
@@ -204,6 +202,7 @@ public class MusicBrainzService implements APIService {
                                                 .map(coverArchiveThumbDTOOptional -> {
                                                     coverArchiveThumbDTOOptional.ifPresent(coverArchiveThumbDTO -> {
                                                         var thumb = coverArchiveThumbDTO.getImages().get(0).getThumbnails();
+
                                                         albumCreateDTO.setThumbUrlSmall(thumb.getUrl250());
                                                         albumCreateDTO.setThumbUrlMedium(thumb.getUrl500());
                                                         albumCreateDTO.setThumbUrlLarge(thumb.getUrl1200());

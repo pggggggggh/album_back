@@ -11,12 +11,8 @@ spring:
   jpa:
     properties:
       hibernate:
-        show_sql: true
-        format_sql: true
     hibernate:
       ddl-auto: update
     database-platform: org.hibernate.dialect.MySQLDialect
 
-logging:
-  level:
-    org.hibernate.orm.jdbc.bind: trace
+resourcePath: "file:///C:/images/"

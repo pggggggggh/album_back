@@ -81,9 +81,9 @@ public class Track extends Entry {
         List<Album> appearsAt = albums.stream().map(AlbumTrack::getAlbum)
                 .sorted(Comparator.comparing(Album::getDate)).toList();
         Album primaryAlbum = appearsAt.get(0);
-        trackDetailsDTO.setThumbUrlLarge(primaryAlbum.getThumbUrlLarge());
-        trackDetailsDTO.setThumbUrlMedium(primaryAlbum.getThumbUrlMedium());
-        trackDetailsDTO.setThumbUrlSmall(primaryAlbum.getThumbUrlSmall());
+        trackDetailsDTO.setThumbUrlLarge(primaryAlbum.getThumbLarge().getImagePath());
+        trackDetailsDTO.setThumbUrlMedium(primaryAlbum.getThumbMedium().getImagePath());
+        trackDetailsDTO.setThumbUrlSmall(primaryAlbum.getThumbSmall().getImagePath());
         albums.forEach(albumTrack -> {
             TrackDetailsDTO.Album album = new TrackDetailsDTO.Album();
             album.setAlbumId(albumTrack.getAlbum().getId());

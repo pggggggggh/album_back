@@ -3,10 +3,7 @@ package com.pgh.album_back.entity;
 import com.pgh.album_back.dto.AlbumDetailsDTO;
 import com.pgh.album_back.dto.AlbumSummaryDTO;
 import com.pgh.album_back.dto.EntryDetailsDTO;
-import jakarta.persistence.Column;
-import jakarta.persistence.ElementCollection;
-import jakarta.persistence.Entity;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -36,9 +33,14 @@ public class Album extends Entry {
     @ColumnDefault("0")
     private Double tracksAverageRating;
 
-    private String thumbUrlSmall; // 250
-    private String thumbUrlMedium; // 500
-    private String thumbUrlLarge; // 1200
+    @OneToOne(orphanRemoval = true)
+    private Thumbnail thumbSmall; // 250
+
+    @OneToOne(orphanRemoval = true)
+    private Thumbnail thumbMedium; // 500
+
+    @OneToOne(orphanRemoval = true)
+    private Thumbnail thumbLarge; // 1200
 
     public Album(String id) {
         super(id);
@@ -87,8 +89,8 @@ public class Album extends Entry {
 //        albumSummaryDTO.setAverageRating(getAverageRating());
         albumSummaryDTO.setReviewCount(tracksReviewCount);
         albumSummaryDTO.setAverageRating(tracksAverageRating);
-        albumSummaryDTO.setThumbUrlMedium(thumbUrlMedium);
-        albumSummaryDTO.setThumbUrlSmall(thumbUrlSmall);
+        albumSummaryDTO.setThumbUrlMedium(thumbMedium.getImagePath());
+        albumSummaryDTO.setThumbUrlSmall(thumbSmall.getImagePath());
         artists.forEach(albumArtist -> {
             albumSummaryDTO.addArtist(albumArtist.getArtist().getId(), albumArtist.getArtist().getName());
         });
@@ -182,9 +184,9 @@ public class Album extends Entry {
         });
 
         // 여기부터 앨범 전용
-        albumDetailsDTO.setThumbUrlLarge(thumbUrlLarge);
-        albumDetailsDTO.setThumbUrlMedium(thumbUrlMedium);
-        albumDetailsDTO.setThumbUrlSmall(thumbUrlSmall);
+        albumDetailsDTO.setThumbUrlLarge(thumbLarge.getImagePath());
+        albumDetailsDTO.setThumbUrlMedium(thumbMedium.getImagePath());
+        albumDetailsDTO.setThumbUrlSmall(thumbSmall.getImagePath());
         albumDetailsDTO.setTypes(types);
         tracks.forEach(albumTrack -> {
             AlbumDetailsDTO.AlbumTrack dtoAlbumTrack = new AlbumDetailsDTO.AlbumTrack();
