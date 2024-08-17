@@ -27,8 +27,7 @@ public class ThumbnailService {
     @Transactional
     public Thumbnail downloadThumbnail(String url) {
         byte[] bytes = webClient.get().uri(url).accept(MediaType.APPLICATION_OCTET_STREAM)
-                .retrieve().bodyToMono(byte[].class)
-                .blockOptional().orElseThrow();
+                .retrieve().bodyToMono(byte[].class).blockOptional().orElseThrow();
 
         String originalFilename = UUID.randomUUID().toString() + ".png";
         Path path = Paths.get("/images", originalFilename);
@@ -43,8 +42,8 @@ public class ThumbnailService {
         }
         Thumbnail thumbnail = new Thumbnail();
         thumbnail.setImagePath(path.toString());
+
         thumbnailRepository.save(thumbnail);
-        thumbnailRepository.flush();
         return thumbnail;
     }
 }

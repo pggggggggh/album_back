@@ -13,7 +13,13 @@ import reactor.netty.http.client.HttpClient;
 public class WebClientConfig {
     @Bean
     public WebClient MusicBrainzWebClient() {
-        return WebClient.builder().baseUrl("https://musicbrainz.org/ws/2").build();
+        ExchangeStrategies exchangeStrategies = ExchangeStrategies.builder()
+                .codecs(configurer -> configurer.defaultCodecs().maxInMemorySize(3 * 1024 * 1024))
+                .build();
+
+        return WebClient.builder()
+                .exchangeStrategies(exchangeStrategies)
+                .baseUrl("https://musicbrainz.org/ws/2").build();
     }
 
     @Bean

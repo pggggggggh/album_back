@@ -13,6 +13,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
@@ -29,10 +31,11 @@ public class AlbumService {
 //    private final ArtistService artistService;
     private final APIService apiService;
     private final ThumbnailService thumbnailService;
+    private final PlatformTransactionManager transactionManager;
 
-    @Transactional
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void createAlbum(String id, boolean allowTrivial) {
-        AlbumCreateDTO albumCreateDTO = apiService.fetchAlbum(id).blockOptional().orElseThrow(RuntimeException::new);
+        AlbumCreateDTO albumCreateDTO = apiService.fetchAlbum(id).blockOptional().orElseThrow();
         Album album = albumRepository.findById(id).orElseGet(() -> new Album(id));
 
         if (!allowTrivial) {
@@ -44,7 +47,6 @@ public class AlbumService {
             }
         }
         log.info("crawling " + albumCreateDTO.getTitle());
-
         album.setTitle(albumCreateDTO.getTitle());
         album.setDisambiguation(albumCreateDTO.getDisambiguation());
         album.setDate(albumCreateDTO.getDate());

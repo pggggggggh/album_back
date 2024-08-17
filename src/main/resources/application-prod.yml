@@ -13,7 +13,7 @@ spring:
       ddl-auto: update
     database-platform: org.hibernate.dialect.SQLServerDialect
 
-resourcePath: "file:///C:/images/"
+resourcePath: "file:/images/"
 
 #logging:
 #  level:

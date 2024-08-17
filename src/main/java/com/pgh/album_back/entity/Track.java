@@ -88,8 +88,8 @@ public class Track extends Entry {
             TrackDetailsDTO.Album album = new TrackDetailsDTO.Album();
             album.setAlbumId(albumTrack.getAlbum().getId());
             album.setAlbumTitle(albumTrack.getAlbum().getTitle());
-            album.setAlbumAverageRating(albumTrack.getAlbum().getAverageRating());
-            album.setAlbumReviewCount(albumTrack.getAlbum().getReviewCount());
+            album.setAlbumAverageRating(albumTrack.getAlbum().getTracksAverageRating());
+            album.setAlbumReviewCount(albumTrack.getAlbum().getTracksReviewCount());
             album.setNumber(albumTrack.getNumber());
 
             trackDetailsDTO.addAppearsAt(album);

@@ -6,11 +6,13 @@ import com.pgh.album_back.entity.*;
 import com.pgh.album_back.repository.*;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class TrackService {
@@ -59,6 +61,7 @@ public class TrackService {
                             newArtist.setName(dtoCredit.getArtistName());
                             return artistRepository.save(newArtist);
                         });
+                log.info("saving " + artist.getName());
 
                 if (creditRepository.existsByArtistAndEntry(artist, track)) continue;
                 Credit credit = new Credit(artist, track);
