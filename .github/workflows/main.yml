@@ -1,0 +1,22 @@
+name: CI/CD
+
+on:
+  push:
+    branches: ["main"]
+
+permissions:
+  contents: read
+
+jobs:
+  CI-CD:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4.1.7
+      - name: Setting up JDK
+        uses: actions/setup-java@v4.2.2
+        with:
+          java-version: '17'
+          distribution: 'oracle'
+      - name: Create .env file from secret
+        run: |
+            echo "${{ secrets.ENV_FILE }}" > .env
