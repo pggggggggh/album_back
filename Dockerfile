@@ -7,4 +7,6 @@ ENV DATABASE_URL=${DATABASE_URL}
 ENV JWT_SECRET=${JWT_SECRET}
 
 ADD ./build/libs/*.jar app.jar
+
+RUN echo "DATABASE_URL=${DATABASE_URL}"
 ENTRYPOINT ["java", "-jar", "app.jar"]
