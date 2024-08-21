@@ -18,5 +18,9 @@ jobs:
           java-version: '17'
           distribution: 'oracle'
       - name: Create .env file from secret
-        run: |
-            echo "${{ secrets.ENV_FILE }}" > .env
+        run: echo "${{ secrets.ENV_CONTENT }}" > .env
+      - name: Build with Gradle
+        run: ./gradlew build
+        env:
+          DATABASE_URL: ${{secrets.DATABASE_URL}}
+          JWT_SECRET: ${{secrets.JWT_SECRET}}
