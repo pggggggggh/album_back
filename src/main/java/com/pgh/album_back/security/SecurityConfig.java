@@ -42,8 +42,10 @@ public class SecurityConfig {
             authorize.requestMatchers(HttpMethod.POST, "/api/users","/api/users/login","/api/users/refresh-token").permitAll();
             if (environment.matchesProfiles("local")) {
                 authorize.requestMatchers(HttpMethod.POST, "api/artists").permitAll();
+                authorize.requestMatchers(HttpMethod.DELETE, "api/artists").permitAll();
             } else {
                 authorize.requestMatchers(HttpMethod.POST, "api/artists").hasRole("ADMIN");
+                authorize.requestMatchers(HttpMethod.DELETE, "api/artists").hasRole("ADMIN");
             }
 
             authorize.anyRequest().authenticated();

@@ -34,7 +34,7 @@ public class ReviewController {
             dtoReview.setRating(review.getRating());
             dtoReview.setEntryId(review.getEntry().getId());
             dtoReview.setEntryTitle(review.getEntry().getTitle());
-            dtoReview.setCreatedAt(review.getCreatedAt());
+            dtoReview.setCreatedAt(review.getUpdatedAt());
 
             return dtoReview;
         });
