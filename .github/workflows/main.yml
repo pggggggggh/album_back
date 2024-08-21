@@ -41,7 +41,7 @@ jobs:
           docker push ${{ secrets.DOCKER_USERNAME }}/album
 
       - name: into ssh
-        uses: appleboy/ssh-action@v0.1.7
+        uses: appleboy/ssh-action@v0.1.4
         with:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USER }}
