@@ -37,6 +37,5 @@ jobs:
             sudo docker rm album
             sudo docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
             sudo docker run --name album -d -p 80:80 -v /images:/images \
-              -e DATABASE_URL=${{secrets.DATABASE_URL}} \
-              -e JWT_SECRET=${{secrets.JWT_SECRET}} \
+              -e DATABASE_URL=${{secrets.DATABASE_URL}} -e JWT_SECRET=${{secrets.JWT_SECRET}} \
               ${{ secrets.DOCKER_USERNAME }}/album:1.0.0
