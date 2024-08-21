@@ -5,7 +5,6 @@ import com.pgh.album_back.entity.Artist;
 import com.pgh.album_back.entity.ArtistRelationship;
 import com.pgh.album_back.repository.ArtistRelationshipRepository;
 import com.pgh.album_back.repository.ArtistRepository;
-import jakarta.annotation.Nonnull;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -13,11 +12,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionDefinition;
-import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
-import org.springframework.transaction.support.TransactionTemplate;
 
 @Service
 @RequiredArgsConstructor
@@ -44,37 +39,28 @@ public class ArtistService {
     }
 
     @Async
+    @Transactional
     public void fetchAndCreateArtist(String id) {
         // block 안하면 Transactional 붙은 함수가 subscribe 남겨놓고 리턴하면 세션이 끝나버려서 LazyException 뜸
         ArtistCreateDTO artistCreateDTO = apiService.fetchArtist(id).blockOptional().orElseThrow();
-
-        TransactionTemplate transactionTemplate = new TransactionTemplate(transactionManager);
-        transactionTemplate.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
-
-        transactionTemplate.execute(new TransactionCallbackWithoutResult() {
-            @Override
-            protected void doInTransactionWithoutResult(@Nonnull TransactionStatus status) {
-                Artist artist = artistRepository.findById(artistCreateDTO.getId())
+        Artist artist = artistRepository.findById(artistCreateDTO.getId())
                         .orElseGet(() -> new Artist(artistCreateDTO.getId()));
 
-                artist.setName(artistCreateDTO.getName());
-                artist.setDisambiguation(artistCreateDTO.getDisambiguation());
-                artist.setType(artistCreateDTO.getType());
-                artist.setGender(artistCreateDTO.getGender());
-                artist.setCountry(artistCreateDTO.getCountry());
-                artist.setArea(artistCreateDTO.getArea());
-                artist.setBeginArea(artistCreateDTO.getBeginArea());
-                artist.setEndArea(artistCreateDTO.getEndArea());
-                artist.setBeginDate(artistCreateDTO.getBeginDate());
-                artist.setEndDate(artistCreateDTO.getEndDate());
-                artistRepository.save(artist);
+        artist.setName(artistCreateDTO.getName());
+        artist.setDisambiguation(artistCreateDTO.getDisambiguation());
+        artist.setType(artistCreateDTO.getType());
+        artist.setGender(artistCreateDTO.getGender());
+        artist.setCountry(artistCreateDTO.getCountry());
+        artist.setArea(artistCreateDTO.getArea());
+        artist.setBeginArea(artistCreateDTO.getBeginArea());
+        artist.setEndArea(artistCreateDTO.getEndArea());
+        artist.setBeginDate(artistCreateDTO.getBeginDate());
+        artist.setEndDate(artistCreateDTO.getEndDate());
+        artistRepository.save(artist);
 
-                artistCreateDTO.getAlbumIds().forEach((albumId) -> {
-                    albumService.createAlbum(albumId, false);
-                });
-            }
+        artistCreateDTO.getAlbumIds().forEach((albumId) -> {
+            albumService.createAlbum(albumId, false);
         });
-
     }
 
     @Transactional
