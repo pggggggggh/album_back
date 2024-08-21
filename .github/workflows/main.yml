@@ -50,4 +50,4 @@ jobs:
             sudo docker stop album
             sudo docker rm album
             sudo docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
-            sudo docker run --name album -d -p 80:80 -v /images:/images ${{ secrets.DOCKER_USERNAME }}/album
+            sudo docker run --env DATABASE_URL=${{secrets.DATABASE_URL}} --env JWT_SECRET=${{secrets.JWT_SECRET}} --name album -d -p 80:80 -v /images:/images ${{ secrets.DOCKER_USERNAME }}/album

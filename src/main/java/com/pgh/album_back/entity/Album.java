@@ -82,7 +82,7 @@ public class Album extends Entry {
         update();
         AlbumSummaryDTO albumSummaryDTO = new AlbumSummaryDTO();
         albumSummaryDTO.setId(id);
-        albumSummaryDTO.setTitle("test test");
+        albumSummaryDTO.setTitle(title);
         albumSummaryDTO.setDisambiguation(disambiguation);
         albumSummaryDTO.setDate(date);
 //        albumSummaryDTO.setReviewCount(getReviewCount());
