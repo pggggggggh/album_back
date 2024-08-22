@@ -56,6 +56,16 @@ public class EntryController {
         return ResponseEntity.ok(dtoPage);
     }
 
+    @DeleteMapping("/albums")
+    public ResponseEntity<Void> deletAlbum(
+            @RequestBody List<String> albumIds
+    ) {
+        for (var id:albumIds) {
+            if (albumRepository.existsById(id)) albumRepository.deleteById(id);
+        }
+        return ResponseEntity.ok().build();
+    }
+
     @Transactional
     @GetMapping("/{type}/{id}/details")
     public ResponseEntity<?> getEntryDetails(

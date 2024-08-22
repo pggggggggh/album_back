@@ -43,9 +43,11 @@ public class SecurityConfig {
             if (environment.matchesProfiles("local")) {
                 authorize.requestMatchers(HttpMethod.POST, "api/artists").permitAll();
                 authorize.requestMatchers(HttpMethod.DELETE, "api/artists").permitAll();
+                authorize.requestMatchers(HttpMethod.DELETE, "api/albums").permitAll();
             } else {
                 authorize.requestMatchers(HttpMethod.POST, "api/artists").hasRole("ADMIN");
                 authorize.requestMatchers(HttpMethod.DELETE, "api/artists").hasRole("ADMIN");
+                authorize.requestMatchers(HttpMethod.DELETE, "api/albums").hasRole("ADMIN");
             }
 
             authorize.anyRequest().authenticated();
