@@ -8,6 +8,6 @@ spring:
     default: prod
 
 jwt:
-  access_token_expiration_time: 1800
+  access_token_expiration_time: 1801
   access_token_refresh_time: 86400000
   secret: ${JWT_SECRET}
