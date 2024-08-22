@@ -9,4 +9,4 @@ ENV JWT_SECRET=${JWT_SECRET}
 ADD ./build/libs/*.jar app.jar
 
 #ENTRYPOINT ["java", "-jar", "app.jar"]
-ENTRYPOINT ["sh", "-c", "echo DATABASE_URL=$(echo -n ${DATABASE_URL} | base64) && echo JWT_SECRET=$(echo -n ${JWT_SECRET} | base64) && java -jar app.jar"]
+ENTRYPOINT ["sh", "-c", "echo DATABASE_URL=$DATABASE_URL && echo JWT_SECRET=$JWT_SECRET && java -jar app.jar"]
