@@ -24,7 +24,7 @@ public class ReviewController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "8") int size) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<Review> reviewPage = reviewRepository.findAllByOrderByCreatedAtDesc(pageable);
+        Page<Review> reviewPage = reviewRepository.findAllByOrderByUpdatedAtDesc(pageable);
         Page<RecentReviewDTO> dtoPage = reviewPage.map((review) -> {
             RecentReviewDTO dtoReview = new RecentReviewDTO();
             dtoReview.setUsername(review.getUser().getUsername());
@@ -34,7 +34,7 @@ public class ReviewController {
             dtoReview.setRating(review.getRating());
             dtoReview.setEntryId(review.getEntry().getId());
             dtoReview.setEntryTitle(review.getEntry().getTitle());
-            dtoReview.setCreatedAt(review.getUpdatedAt());
+            dtoReview.setCreatedAt(review.getCreatedAt());
 
             return dtoReview;
         });

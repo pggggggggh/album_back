@@ -15,4 +15,5 @@ public interface ReviewRepository extends JpaRepository<Review,Long> {
     Optional<Review> findFirstByUserAndEntry(User user,Entry entry);
     boolean existsByUserAndEntry(User user,Entry entry);
     Page<Review> findAllByOrderByCreatedAtDesc(Pageable pageable);
+    Page<Review> findAllByOrderByUpdatedAtDesc(Pageable pageable);
 }
